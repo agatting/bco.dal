@@ -56,12 +56,12 @@ public interface PowerService extends Service, PowerProvider {
         }
 
         @Override
-        public Event invoke(final Event request) throws Throwable {
+        public Event invoke(final Event request) throws UserCodeException {
             try {
                 service.setPower(((PowerState) request.getData()).getValue());
                 return new Event(Void.class);
             } catch (Exception ex) {
-                throw ExceptionPrinter.printHistoryAndReturnThrowable(new InvocationFailedException(this, service, ex), logger);
+                throw ExceptionPrinter.printHistoryAndReturnThrowable(new UserCodeException(new InvocationFailedException(this, service, ex)), logger);
             }
         }
     }

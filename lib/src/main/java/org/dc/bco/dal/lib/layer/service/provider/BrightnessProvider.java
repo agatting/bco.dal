@@ -28,8 +28,8 @@ package org.dc.bco.dal.lib.layer.service.provider;
  */
 
 import org.dc.jul.exception.CouldNotPerformException;
-import org.dc.jul.exception.printer.ExceptionPrinter;
 import org.dc.jul.exception.InvocationFailedException;
+import org.dc.jul.exception.printer.ExceptionPrinter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rsb.Event;
@@ -42,7 +42,7 @@ import rsb.patterns.EventCallback;
 public interface BrightnessProvider extends Provider {
 
     public Double getBrightness() throws CouldNotPerformException;
-    
+
     public class GetBrightnessCallback extends EventCallback {
 
 		private static final Logger logger = LoggerFactory.getLogger(GetBrightnessCallback.class);
@@ -54,11 +54,11 @@ public interface BrightnessProvider extends Provider {
 		}
 
 		@Override
-		public Event invoke(final Event request) throws Throwable {
+		public Event invoke(final Event request) throws UserCodeException {
 			try {
 				return new Event(Double.class, provider.getBrightness());
 			} catch (Exception ex) {
-				throw ExceptionPrinter.printHistoryAndReturnThrowable(new InvocationFailedException(this, provider, ex), logger);
+				throw ExceptionPrinter.printHistoryAndReturnThrowable(new UserCodeException(new InvocationFailedException(this, provider, ex)), logger);
 			}
 		}
 	}
