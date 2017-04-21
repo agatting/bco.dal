@@ -153,11 +153,13 @@ public interface ServiceRemote<S extends Service, ST extends GeneratedMessage> e
     @Override
     public void waitForData(final long timeout, final TimeUnit timeUnit) throws CouldNotPerformException, InterruptedException;
 
+
     @Override
-    public default void activate(boolean waitForData) throws CouldNotPerformException, InterruptedException {
-        activate();
-        waitForData();
-    }
+    public void activate(boolean waitForData) throws CouldNotPerformException, InterruptedException;
+//    public default void activate(boolean waitForData) throws CouldNotPerformException, InterruptedException {
+//        activate();
+//        waitForData();
+//    }
 
     /**
      * Method adds the given observer to all internal unit remotes.
@@ -165,11 +167,12 @@ public interface ServiceRemote<S extends Service, ST extends GeneratedMessage> e
      * @param observer the observer to observe the connection state of the internal unit remotes.
      */
     @Override
-    public default void addConnectionStateObserver(Observer<ConnectionState> observer) {
-        for (Remote remote : getInternalUnits()) {
-            remote.addConnectionStateObserver(observer);
-        }
-    }
+    public void addConnectionStateObserver(Observer<ConnectionState> observer);
+//    public default void addConnectionStateObserver(Observer<ConnectionState> observer) {
+//        for (Remote remote : getInternalUnits()) {
+//            remote.addConnectionStateObserver(observer);
+//        }
+//    }
 
     /**
      * Method removes the given observer on all internal unit remotes.
@@ -177,11 +180,12 @@ public interface ServiceRemote<S extends Service, ST extends GeneratedMessage> e
      * @param observer the observer to remove.
      */
     @Override
-    public default void removeConnectionStateObserver(Observer<ConnectionState> observer) {
-        for (final Remote remote : getInternalUnits()) {
-            remote.removeConnectionStateObserver(observer);
-        }
-    }
+    public void removeConnectionStateObserver(Observer<ConnectionState> observer);
+//    public default void removeConnectionStateObserver(Observer<ConnectionState> observer) {
+//        for (final Remote remote : getInternalUnits()) {
+//            remote.removeConnectionStateObserver(observer);
+//        }
+//    }
 
     /**
      * Method returns the connection state of the internal unit remotes.
@@ -191,34 +195,35 @@ public interface ServiceRemote<S extends Service, ST extends GeneratedMessage> e
      * @return Method returns DISCONNECTED if non of the internal unit remotes is connected. It returns CONNECTING if at least one remote is connected and returns CONNECTED if all internal unit remotes are successfully connected.
      */
     @Override
-    public default ConnectionState getConnectionState() {
-        boolean disconnectedRemoteDetected = false;
-        boolean connectedRemoteDetected = false;
-
-        for (final Remote remote : getInternalUnits()) {
-            switch (remote.getConnectionState()) {
-                case CONNECTED:
-                    connectedRemoteDetected = true;
-                    break;
-                case CONNECTING:
-                case DISCONNECTED:
-                    disconnectedRemoteDetected = true;
-                    break;
-                default:
-                //ignore unknown connection state";
-            }
-        }
-
-        if (disconnectedRemoteDetected && connectedRemoteDetected) {
-            return ConnectionState.CONNECTING;
-        } else if (disconnectedRemoteDetected) {
-            return ConnectionState.DISCONNECTED;
-        } else if (connectedRemoteDetected) {
-            return ConnectionState.CONNECTED;
-        } else {
-            return ConnectionState.UNKNOWN;
-        }
-    }
+    public ConnectionState getConnectionState();
+//    public default ConnectionState getConnectionState() {
+//        boolean disconnectedRemoteDetected = false;
+//        boolean connectedRemoteDetected = false;
+//
+//        for (final Remote remote : getInternalUnits()) {
+//            switch (remote.getConnectionState()) {
+//                case CONNECTED:
+//                    connectedRemoteDetected = true;
+//                    break;
+//                case CONNECTING:
+//                case DISCONNECTED:
+//                    disconnectedRemoteDetected = true;
+//                    break;
+//                default:
+//                    //ignore unknown connection state";
+//            }
+//        }
+//
+//        if (disconnectedRemoteDetected && connectedRemoteDetected) {
+//            return ConnectionState.CONNECTING;
+//        } else if (disconnectedRemoteDetected) {
+//            return ConnectionState.DISCONNECTED;
+//        } else if (connectedRemoteDetected) {
+//            return ConnectionState.CONNECTED;
+//        } else {
+//            return ConnectionState.UNKNOWN;
+//        }
+//    }
 
     /**
      * Method request the data of all internal unit remotes.
@@ -227,9 +232,10 @@ public interface ServiceRemote<S extends Service, ST extends GeneratedMessage> e
      * @throws CouldNotPerformException is thrown if any error occurs during the request.
      */
     @Override
-    public default CompletableFuture<ST> requestData() throws CouldNotPerformException {
-        return requestData(true);
-    }
+    public  CompletableFuture<ST> requestData() throws CouldNotPerformException;
+//    public default CompletableFuture<ST> requestData() throws CouldNotPerformException {
+//        return requestData(true);
+//    }
 
     /**
      * Method request the data of all internal unit remotes.

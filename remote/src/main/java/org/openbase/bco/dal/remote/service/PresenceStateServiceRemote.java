@@ -23,11 +23,15 @@ package org.openbase.bco.dal.remote.service;
  */
 
 import java.util.Collection;
+import java.util.concurrent.CompletableFuture;
+
 import org.openbase.bco.dal.lib.layer.service.collection.PresenceStateProviderServiceCollection;
 import org.openbase.bco.dal.lib.layer.service.provider.PresenceStateProviderService;
 import org.openbase.bco.dal.remote.unit.UnitRemote;
 import org.openbase.jul.exception.CouldNotPerformException;
 import org.openbase.jul.exception.NotAvailableException;
+import org.openbase.jul.pattern.Observer;
+import org.openbase.jul.pattern.Remote;
 import rst.domotic.service.ServiceTemplateType.ServiceTemplate.ServiceType;
 import rst.domotic.state.PresenceStateType.PresenceState;
 import rst.domotic.unit.UnitTemplateType.UnitTemplate.UnitType;
@@ -78,4 +82,60 @@ public class PresenceStateServiceRemote extends AbstractServiceRemote<PresenceSt
     public Collection<PresenceStateProviderService> getPresenceStateProviderServices() throws CouldNotPerformException {
         return getServices();
     }
+
+    /////////////
+    // START DEFAULT INTERFACE METHODS
+    /////////////
+    public void activate(boolean waitForData) throws CouldNotPerformException, InterruptedException {
+        activate();
+        waitForData();
+    }
+
+    public CompletableFuture<PresenceState> requestData() throws CouldNotPerformException {
+        return requestData(true);
+    }
+
+    public void addConnectionStateObserver(Observer<ConnectionState> observer) {
+        for (Remote remote : getInternalUnits()) {
+            remote.addConnectionStateObserver(observer);
+        }
+    }
+
+    public ConnectionState getConnectionState() {
+        boolean disconnectedRemoteDetected = false;
+        boolean connectedRemoteDetected = false;
+
+        for (final Remote remote : getInternalUnits()) {
+            switch (remote.getConnectionState()) {
+                case CONNECTED:
+                    connectedRemoteDetected = true;
+                    break;
+                case CONNECTING:
+                case DISCONNECTED:
+                    disconnectedRemoteDetected = true;
+                    break;
+                default:
+                    //ignore unknown connection state";
+            }
+        }
+
+        if (disconnectedRemoteDetected && connectedRemoteDetected) {
+            return ConnectionState.CONNECTING;
+        } else if (disconnectedRemoteDetected) {
+            return ConnectionState.DISCONNECTED;
+        } else if (connectedRemoteDetected) {
+            return ConnectionState.CONNECTED;
+        } else {
+            return ConnectionState.UNKNOWN;
+        }
+    }
+
+    public void removeConnectionStateObserver(Observer<ConnectionState> observer) {
+        for (final Remote remote : getInternalUnits()) {
+            remote.removeConnectionStateObserver(observer);
+        }
+    }
+    /////////////
+    // END DEFAULT INTERFACE METHODS
+    /////////////
 }

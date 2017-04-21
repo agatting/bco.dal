@@ -22,6 +22,7 @@ package org.openbase.bco.dal.remote.service;
  * #L%
  */
 import java.util.Collection;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import org.openbase.bco.dal.lib.layer.service.collection.ActivationStateOperationServiceCollection;
 import org.openbase.bco.dal.lib.layer.service.operation.ActivationStateOperationService;
@@ -29,6 +30,8 @@ import org.openbase.bco.dal.remote.unit.UnitRemote;
 import org.openbase.jul.exception.CouldNotPerformException;
 import org.openbase.jul.exception.NotAvailableException;
 import org.openbase.jul.extension.rst.processing.TimestampProcessor;
+import org.openbase.jul.pattern.Observer;
+import org.openbase.jul.pattern.Remote;
 import org.openbase.jul.schedule.GlobalCachedExecutorService;
 import rst.domotic.service.ServiceTemplateType.ServiceTemplate.ServiceType;
 import rst.domotic.state.ActivationStateType.ActivationState;
@@ -92,4 +95,60 @@ public class ActivationStateServiceRemote extends AbstractServiceRemote<Activati
     public Future<Void> setActivationState(final ActivationState activationState, final UnitType unitType) throws CouldNotPerformException {
         return GlobalCachedExecutorService.allOf(super.getServices(unitType), (ActivationStateOperationService input) -> input.setActivationState(activationState));
     }
+
+    /////////////
+    // START DEFAULT INTERFACE METHODS
+    /////////////
+    public void activate(boolean waitForData) throws CouldNotPerformException, InterruptedException {
+        activate();
+        waitForData();
+    }
+
+    public CompletableFuture<ActivationState> requestData() throws CouldNotPerformException {
+        return requestData(true);
+    }
+
+    public void addConnectionStateObserver(Observer<ConnectionState> observer) {
+        for (Remote remote : getInternalUnits()) {
+            remote.addConnectionStateObserver(observer);
+        }
+    }
+
+    public ConnectionState getConnectionState() {
+        boolean disconnectedRemoteDetected = false;
+        boolean connectedRemoteDetected = false;
+
+        for (final Remote remote : getInternalUnits()) {
+            switch (remote.getConnectionState()) {
+                case CONNECTED:
+                    connectedRemoteDetected = true;
+                    break;
+                case CONNECTING:
+                case DISCONNECTED:
+                    disconnectedRemoteDetected = true;
+                    break;
+                default:
+                    //ignore unknown connection state";
+            }
+        }
+
+        if (disconnectedRemoteDetected && connectedRemoteDetected) {
+            return ConnectionState.CONNECTING;
+        } else if (disconnectedRemoteDetected) {
+            return ConnectionState.DISCONNECTED;
+        } else if (connectedRemoteDetected) {
+            return ConnectionState.CONNECTED;
+        } else {
+            return ConnectionState.UNKNOWN;
+        }
+    }
+
+    public void removeConnectionStateObserver(Observer<ConnectionState> observer) {
+        for (final Remote remote : getInternalUnits()) {
+            remote.removeConnectionStateObserver(observer);
+        }
+    }
+    /////////////
+    // END DEFAULT INTERFACE METHODS
+    /////////////
 }
