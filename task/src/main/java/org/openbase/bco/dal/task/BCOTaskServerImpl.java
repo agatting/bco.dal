@@ -160,4 +160,18 @@ public class BCOTaskServerImpl implements BCOTaskServer {
             };
         }
     }
+
+    /////////////
+    // START DEFAULT INTERFACE METHODS
+    /////////////
+    public void init(Void config) throws InitializationException, InterruptedException {
+        init();
+    }
+
+    public Void getDefaultConfig() {
+        return null;
+    }
+    /////////////
+    // END DEFAULT INTERFACE METHODS
+    /////////////
 }

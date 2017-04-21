@@ -4,6 +4,7 @@ package org.openbase.bco.dal.task;
 import org.openbase.bco.registry.lib.BCO;
 import org.openbase.bco.registry.lib.launch.AbstractLauncher;
 import org.openbase.jul.exception.CouldNotPerformException;
+import org.openbase.jul.exception.InitializationException;
 
 /*-
  * #%L
@@ -50,4 +51,18 @@ public class BCOTaskServerLauncher extends AbstractLauncher<BCOTaskServerControl
         BCO.printLogo();
         AbstractLauncher.main(args, BCOTaskServer.class, BCOTaskServerLauncher.class);
     }
+
+    /////////////
+    // START DEFAULT INTERFACE METHODS
+    /////////////
+    public void init(Void config) throws InitializationException, InterruptedException {
+        init();
+    }
+
+    public Void getDefaultConfig() {
+        return null;
+    }
+    /////////////
+    // END DEFAULT INTERFACE METHODS
+    /////////////
 }

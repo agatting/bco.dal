@@ -100,4 +100,18 @@ public class BCOTaskServerController implements BCOTaskServer, Launchable<Void>,
             instance = null;
         }
     }
+
+    /////////////
+    // START DEFAULT INTERFACE METHODS
+    /////////////
+    public void init(Void config) throws InitializationException, InterruptedException {
+        init();
+    }
+
+    public Void getDefaultConfig() {
+        return null;
+    }
+    /////////////
+    // END DEFAULT INTERFACE METHODS
+    /////////////
 }
