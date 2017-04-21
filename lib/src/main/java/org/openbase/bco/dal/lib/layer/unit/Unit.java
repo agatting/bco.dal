@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import org.openbase.bco.dal.lib.layer.service.Service;
+import org.openbase.bco.dal.lib.layer.service.Service$;
 import org.openbase.bco.dal.lib.layer.service.ServiceJSonProcessor;
 import org.openbase.jul.exception.CouldNotPerformException;
 import org.openbase.jul.exception.InvalidStateException;
@@ -123,7 +124,7 @@ public interface Unit<D> extends Service, LabelProvider, ScopeProvider, Identifi
                 }
 
                 // load operation service attribute by related provider service
-                Object serviceAttribute = Service.invokeServiceMethod(serviceTemplate.getType(), ServiceTemplate.ServicePattern.PROVIDER, this);
+                Object serviceAttribute = Service$.invokeServiceMethod(serviceTemplate.getType(), ServiceTemplate.ServicePattern.PROVIDER, this);
                 System.out.println("load[" + serviceAttribute + "] type: " + serviceAttribute.getClass().getSimpleName());
 
                 // verify operation service state (e.g. ignore UNKNOWN service states)

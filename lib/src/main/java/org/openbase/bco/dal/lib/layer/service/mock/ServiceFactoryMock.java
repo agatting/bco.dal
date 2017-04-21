@@ -29,6 +29,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import org.openbase.bco.dal.lib.layer.service.Service;
+import org.openbase.bco.dal.lib.layer.service.Service$;
 import org.openbase.bco.dal.lib.layer.service.ServiceFactory;
 import org.openbase.bco.dal.lib.layer.service.operation.BlindStateOperationService;
 import org.openbase.bco.dal.lib.layer.service.operation.BrightnessStateOperationService;
@@ -233,7 +234,7 @@ public class ServiceFactoryMock implements ServiceFactory {
 
                         // apply random service manipulation
                         try {
-                            Service.invokeOperationServiceMethod(serviceType, unit, stateList.get(random.nextInt(stateList.size())));
+                            Service$.invokeOperationServiceMethod(serviceType, unit, stateList.get(random.nextInt(stateList.size())));
                         } catch (CouldNotPerformException ex) {
                             ExceptionPrinter.printHistory("Could not apply service modification!", ex, logger);
                         }

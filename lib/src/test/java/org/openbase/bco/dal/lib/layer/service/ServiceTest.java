@@ -66,10 +66,10 @@ public class ServiceTest {
     public void testDetectServiceDataClass() throws Exception {
         System.out.println("detectServiceDataClass");
         try {
-            assertEquals("wrong service class detected!", Service.detectServiceDataClass(ServiceType.BATTERY_STATE_SERVICE), BatteryStateType.BatteryState.class);
-            assertEquals("wrong service class detected!", Service.detectServiceDataClass(ServiceType.COLOR_STATE_SERVICE), ColorStateType.ColorState.class);
-            assertEquals("wrong service class detected!", Service.detectServiceDataClass(ServiceType.SMOKE_STATE_SERVICE), SmokeStateType.SmokeState.class);
-            assertEquals("wrong service class detected!", Service.detectServiceDataClass(ServiceType.MOTION_STATE_SERVICE), MotionStateType.MotionState.class);
+            assertEquals("wrong service class detected!", Service$.detectServiceDataClass(ServiceType.BATTERY_STATE_SERVICE), BatteryStateType.BatteryState.class);
+            assertEquals("wrong service class detected!", Service$.detectServiceDataClass(ServiceType.COLOR_STATE_SERVICE), ColorStateType.ColorState.class);
+            assertEquals("wrong service class detected!", Service$.detectServiceDataClass(ServiceType.SMOKE_STATE_SERVICE), SmokeStateType.SmokeState.class);
+            assertEquals("wrong service class detected!", Service$.detectServiceDataClass(ServiceType.MOTION_STATE_SERVICE), MotionStateType.MotionState.class);
         } catch (Exception ex) {
             throw ExceptionPrinter.printHistoryAndReturnThrowable(ex, System.out);
         }

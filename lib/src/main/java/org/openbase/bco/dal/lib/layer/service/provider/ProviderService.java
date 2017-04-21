@@ -23,6 +23,7 @@ package org.openbase.bco.dal.lib.layer.service.provider;
  */
 import java.util.concurrent.Future;
 import org.openbase.bco.dal.lib.layer.service.Service;
+import org.openbase.bco.dal.lib.layer.service.Service$;
 import org.openbase.jul.exception.CouldNotPerformException;
 import org.openbase.jul.exception.NotSupportedException;
 import rst.domotic.action.ActionConfigType;
@@ -48,7 +49,7 @@ public interface ProviderService extends Service {
      * @return the name of the update method.
      */
     public static String getUpdateMethodName(final ServiceTemplateType.ServiceTemplate.ServiceType serviceType) {
-        return UPDATE_METHOD_PREFIX + Service.getServiceBaseName(serviceType) + "Provider";
+        return UPDATE_METHOD_PREFIX + Service$.getServiceBaseName(serviceType) + "Provider";
     }
 
     @Override

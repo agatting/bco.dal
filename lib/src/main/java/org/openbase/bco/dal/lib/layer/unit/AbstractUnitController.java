@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.Future;
 import org.openbase.bco.dal.lib.layer.service.Service;
+import org.openbase.bco.dal.lib.layer.service.Service$;
 import org.openbase.bco.dal.lib.layer.service.ServiceJSonProcessor;
 import org.openbase.bco.dal.lib.layer.service.consumer.ConsumerService;
 import org.openbase.bco.dal.lib.layer.service.operation.OperationService;
@@ -360,7 +361,7 @@ public abstract class AbstractUnitController<D extends GeneratedMessage, DB exte
             final ServiceTemplate serviceTemplate = ServiceTemplate.newBuilder().setType(actionConfig.getServiceType()).setPattern(ServiceTemplate.ServicePattern.OPERATION).build();
 
             return GlobalCachedExecutorService.submit(() -> {
-                Service.invokeServiceMethod(serviceTemplate, AbstractUnitController.this, attribute);
+                Service$.invokeServiceMethod(serviceTemplate, AbstractUnitController.this, attribute);
                 return null;
             });
         } catch (CouldNotPerformException ex) {
