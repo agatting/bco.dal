@@ -24,6 +24,7 @@ package org.openbase.bco.dal.remote.service;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import org.openbase.bco.dal.lib.layer.service.collection.PowerStateOperationServiceCollection;
 import org.openbase.bco.dal.lib.layer.service.operation.PowerStateOperationService;
 import org.openbase.bco.dal.lib.layer.unit.UnitRemote;
@@ -152,7 +153,7 @@ public class PowerStateServiceRemote extends AbstractServiceRemote<PowerStateOpe
             timestamp = Math.max(timestamp, service.getPowerState().getTimestamp().getTime());
         }
 
-        return TimestampProcessor.updateTimestamp(timestamp, PowerState.newBuilder().setValue(powerStateValue), logger).build();
+        return TimestampProcessor.updateTimestamp(timestamp, PowerState.newBuilder().setValue(powerStateValue), TimeUnit.MICROSECONDS, logger).build();
     }
 
     /**

@@ -23,7 +23,7 @@ package org.openbase.bco.dal.remote.service;
  */
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
-
+import java.util.concurrent.TimeUnit;
 import org.openbase.bco.dal.lib.layer.service.collection.MotionStateProviderServiceCollection;
 import org.openbase.bco.dal.lib.layer.service.provider.MotionStateProviderService;
 import org.openbase.bco.dal.remote.unit.UnitRemote;
@@ -90,7 +90,7 @@ public class MotionStateServiceRemote extends AbstractServiceRemote<MotionStateP
 
             timestamp = Math.max(timestamp, motionState.getTimestamp().getTime());
         }
-        return TimestampProcessor.updateTimestamp(timestamp, MotionState.newBuilder().setValue(motionValue).setLastMotion(Timestamp.newBuilder().setTime(lastMotion)), logger).build();
+        return TimestampProcessor.updateTimestamp(timestamp, MotionState.newBuilder().setValue(motionValue).setLastMotion(Timestamp.newBuilder().setTime(lastMotion)), TimeUnit.MICROSECONDS, logger).build();
     }
 
     /////////////

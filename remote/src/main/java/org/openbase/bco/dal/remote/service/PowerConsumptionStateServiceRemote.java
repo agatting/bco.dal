@@ -23,7 +23,7 @@ package org.openbase.bco.dal.remote.service;
  */
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
-
+import java.util.concurrent.TimeUnit;
 import org.openbase.bco.dal.lib.layer.service.collection.PowerConsumptionStateProviderServiceCollection;
 import org.openbase.bco.dal.lib.layer.service.provider.PowerConsumptionStateProviderService;
 import org.openbase.bco.dal.lib.layer.unit.UnitRemote;
@@ -89,7 +89,7 @@ public class PowerConsumptionStateServiceRemote extends AbstractServiceRemote<Po
         averageCurrent = averageCurrent / amount;
         averageVoltage = averageVoltage / amount;
 
-        return TimestampProcessor.updateTimestamp(timestamp, PowerConsumptionState.newBuilder().setConsumption(consumptionSum).setCurrent(averageCurrent).setVoltage(averageVoltage), logger).build();
+        return TimestampProcessor.updateTimestamp(timestamp, PowerConsumptionState.newBuilder().setConsumption(consumptionSum).setCurrent(averageCurrent).setVoltage(averageVoltage), TimeUnit.MICROSECONDS, logger).build();
     }
 
     /////////////

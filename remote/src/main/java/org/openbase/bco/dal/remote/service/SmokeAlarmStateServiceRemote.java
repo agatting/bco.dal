@@ -23,7 +23,7 @@ package org.openbase.bco.dal.remote.service;
  */
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
-
+import java.util.concurrent.TimeUnit;
 import org.openbase.bco.dal.lib.layer.service.collection.SmokeAlarmStateProviderServiceCollection;
 import org.openbase.bco.dal.lib.layer.service.provider.SmokeAlarmStateProviderService;
 import org.openbase.bco.dal.lib.layer.unit.UnitRemote;
@@ -34,7 +34,6 @@ import org.openbase.jul.pattern.Observer;
 import org.openbase.jul.pattern.Remote;
 import rst.domotic.service.ServiceTemplateType.ServiceTemplate.ServiceType;
 import rst.domotic.state.AlarmStateType.AlarmState;
-import rst.domotic.state.SmokeStateType;
 import rst.domotic.unit.UnitTemplateType.UnitTemplate.UnitType;
 
 /**
@@ -83,7 +82,7 @@ public class SmokeAlarmStateServiceRemote extends AbstractServiceRemote<SmokeAla
 
             timestamp = Math.max(timestamp, service.getSmokeAlarmState().getTimestamp().getTime());
         }
-        return TimestampProcessor.updateTimestamp(timestamp, AlarmState.newBuilder().setValue(alarmValue), logger).build();
+        return TimestampProcessor.updateTimestamp(timestamp, AlarmState.newBuilder().setValue(alarmValue), TimeUnit.MICROSECONDS, logger).build();
     }
 
     /////////////

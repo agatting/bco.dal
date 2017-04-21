@@ -23,7 +23,7 @@ package org.openbase.bco.dal.remote.service;
  */
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
-
+import java.util.concurrent.TimeUnit;
 import org.openbase.bco.dal.lib.layer.service.collection.ContactStateProviderServiceCollection;
 import org.openbase.bco.dal.lib.layer.service.provider.ContactStateProviderService;
 import org.openbase.bco.dal.remote.unit.UnitRemote;
@@ -87,7 +87,7 @@ public class ContactStateServiceRemote extends AbstractServiceRemote<ContactStat
             }
             timestamp = Math.max(timestamp, service.getContactState().getTimestamp().getTime());
         }
-        return TimestampProcessor.updateTimestamp(timestamp, ContactState.newBuilder().setValue(contactValue), logger).build();
+        return TimestampProcessor.updateTimestamp(timestamp, ContactState.newBuilder().setValue(contactValue), TimeUnit.MICROSECONDS, logger).build();
     }
 
     /////////////

@@ -23,7 +23,7 @@ package org.openbase.bco.dal.remote.service;
  */
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
-
+import java.util.concurrent.TimeUnit;
 import org.openbase.bco.dal.lib.layer.service.collection.HandleStateProviderServiceCollection;
 import org.openbase.bco.dal.lib.layer.service.provider.HandleStateProviderService;
 import org.openbase.bco.dal.remote.unit.UnitRemote;
@@ -84,7 +84,7 @@ public class HandleStateServiceRemote extends AbstractServiceRemote<HandleStateP
         }
 
         position /= amount;
-        return TimestampProcessor.updateTimestamp(timestamp, HandleState.newBuilder().setPosition(position), logger).build();
+        return TimestampProcessor.updateTimestamp(timestamp, HandleState.newBuilder().setPosition(position), TimeUnit.MICROSECONDS, logger).build();
     }
 
     /////////////
