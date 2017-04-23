@@ -42,6 +42,7 @@ import org.openbase.jul.exception.printer.ExceptionPrinter;
 import org.openbase.jul.extension.rsb.scope.ScopeGenerator;
 import org.openbase.jul.extension.rsb.scope.ScopeTransformer;
 import org.openbase.jul.iface.Shutdownable;
+import org.openbase.jul.iface.Shutdownable$;
 import org.openbase.jul.processing.StringProcessor;
 import org.openbase.jul.schedule.SyncObject;
 import org.openbase.jul.storage.registry.RemoteControllerRegistry;
@@ -186,7 +187,7 @@ public class Units {
             ExceptionPrinter.printHistory(new FatalImplementationErrorException(Units.class, new org.openbase.jul.exception.InstantiationException(Units.class, ex)), LOGGER);
         }
 
-        Shutdownable.registerShutdownHook(new Shutdownable() {
+        Shutdownable$.registerShutdownHook(new Shutdownable() {
             @Override
             public void shutdown() {
                 try {
