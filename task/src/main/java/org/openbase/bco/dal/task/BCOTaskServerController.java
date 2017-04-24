@@ -111,6 +111,16 @@ public class BCOTaskServerController implements BCOTaskServer, Launchable<Void>,
     public Void getDefaultConfig() {
         return null;
     }
+
+    public boolean launch() throws CouldNotPerformException, InterruptedException {
+        try {
+            init();
+            activate();
+        } catch (CouldNotPerformException ex) {
+            throw new CouldNotPerformException("Could not launch " + this, ex);
+        }
+        return true;
+    }
     /////////////
     // END DEFAULT INTERFACE METHODS
     /////////////
