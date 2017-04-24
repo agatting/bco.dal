@@ -42,7 +42,9 @@ import rst.domotic.service.ServiceTemplateType.ServiceTemplate.ServiceType;
 import rst.domotic.state.ColorStateType.ColorState;
 import rst.domotic.unit.UnitTemplateType.UnitTemplate.UnitType;
 import rst.vision.ColorType;
+import rst.vision.HSBColorType;
 import rst.vision.HSBColorType.HSBColor;
+import rst.vision.RGBColorType;
 
 /**
  *
@@ -169,6 +171,23 @@ public class ColorStateServiceRemote extends AbstractServiceRemote<ColorStateOpe
             remote.removeConnectionStateObserver(observer);
         }
     }
+
+    public ColorType.Color getColor() throws NotAvailableException {
+        return getColorState().getColor();
+    }
+
+    public HSBColorType.HSBColor getHSBColor() throws NotAvailableException {
+        return getColorState().getColor().getHsbColor();
+    }
+
+    public RGBColorType.RGBColor getRGBColor() throws NotAvailableException {
+        return getColorState().getColor().getRgbColor();
+    }
+
+    public java.awt.Color getJavaAWTColor() throws CouldNotPerformException {
+        return HSBColorToRGBColorTransformer.transform(getHSBColor());
+    }
+
     /////////////
     // END DEFAULT INTERFACE METHODS
     /////////////

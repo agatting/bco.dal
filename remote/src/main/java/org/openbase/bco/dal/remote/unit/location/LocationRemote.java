@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.concurrent.Future;
 import org.openbase.bco.dal.lib.layer.service.ServiceRemote;
 import org.openbase.bco.dal.lib.layer.unit.location.Location;
+import org.openbase.bco.dal.lib.transform.HSBColorToRGBColorTransformer;
 import org.openbase.bco.dal.remote.service.ServiceRemoteManager;
 import org.openbase.bco.dal.remote.unit.AbstractUnitRemote;
 import org.openbase.bco.dal.remote.unit.Units;
@@ -176,4 +177,26 @@ public class LocationRemote extends AbstractUnitRemote<LocationData> implements 
         }
         return neighborList;
     }
+
+    //////////
+    // START DEFAULT INTERFACE METHODS
+
+    public ColorType.Color getColor() throws NotAvailableException {
+        return getColorState().getColor();
+    }
+
+    public HSBColorType.HSBColor getHSBColor() throws NotAvailableException {
+        return getColorState().getColor().getHsbColor();
+    }
+
+    public RGBColorType.RGBColor getRGBColor() throws NotAvailableException {
+        return getColorState().getColor().getRgbColor();
+    }
+
+    public java.awt.Color getJavaAWTColor() throws CouldNotPerformException {
+        return HSBColorToRGBColorTransformer.transform(getHSBColor());
+    }
+
+    // END DEFAULT INTERFACE METHODS
+    //////////
 }

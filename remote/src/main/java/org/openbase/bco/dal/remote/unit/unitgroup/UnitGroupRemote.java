@@ -28,6 +28,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import org.openbase.bco.dal.lib.layer.service.ServiceRemote;
 import org.openbase.bco.dal.lib.layer.unit.unitgroup.UnitGroup;
+import org.openbase.bco.dal.lib.transform.HSBColorToRGBColorTransformer;
 import org.openbase.bco.dal.remote.service.AbstractServiceRemote;
 import org.openbase.bco.dal.remote.service.ServiceRemoteManager;
 import org.openbase.bco.dal.remote.unit.AbstractUnitRemote;
@@ -225,4 +226,26 @@ public class UnitGroupRemote extends AbstractUnitRemote<UnitGroupData> implement
     public ServiceRemote getServiceRemote(final ServiceTemplateType.ServiceTemplate.ServiceType serviceType) throws NotAvailableException {
         return serviceRemoteManager.getServiceRemote(serviceType);
     }
+
+    //////////
+    // START DEFAULT INTERFACE METHODS
+
+    public ColorType.Color getColor() throws NotAvailableException {
+        return getColorState().getColor();
+    }
+
+    public HSBColorType.HSBColor getHSBColor() throws NotAvailableException {
+        return getColorState().getColor().getHsbColor();
+    }
+
+    public RGBColorType.RGBColor getRGBColor() throws NotAvailableException {
+        return getColorState().getColor().getRgbColor();
+    }
+
+    public java.awt.Color getJavaAWTColor() throws CouldNotPerformException {
+        return HSBColorToRGBColorTransformer.transform(getHSBColor());
+    }
+
+    // END DEFAULT INTERFACE METHODS
+    //////////
 }

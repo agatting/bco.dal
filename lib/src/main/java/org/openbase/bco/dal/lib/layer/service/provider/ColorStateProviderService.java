@@ -39,19 +39,27 @@ public interface ColorStateProviderService extends ProviderService {
     @RPCMethod
     public ColorState getColorState() throws NotAvailableException;
 
-    default public Color getColor() throws NotAvailableException {
-        return getColorState().getColor();
-    }
+    public Color getColor() throws NotAvailableException;
 
-    default public HSBColor getHSBColor() throws NotAvailableException {
-        return getColorState().getColor().getHsbColor();
-    }
+    public HSBColor getHSBColor() throws NotAvailableException;
 
-    default public RGBColor getRGBColor() throws NotAvailableException {
-        return getColorState().getColor().getRgbColor();
-    }
+    public RGBColor getRGBColor() throws NotAvailableException;
 
-    default public java.awt.Color getJavaAWTColor() throws CouldNotPerformException {
-        return HSBColorToRGBColorTransformer.transform(getHSBColor());
-    }
+    public java.awt.Color getJavaAWTColor() throws CouldNotPerformException;
+
+//    default public Color getColor() throws NotAvailableException {
+//        return getColorState().getColor();
+//    }
+//
+//    default public HSBColor getHSBColor() throws NotAvailableException {
+//        return getColorState().getColor().getHsbColor();
+//    }
+//
+//    default public RGBColor getRGBColor() throws NotAvailableException {
+//        return getColorState().getColor().getRgbColor();
+//    }
+//
+//    default public java.awt.Color getJavaAWTColor() throws CouldNotPerformException {
+//        return HSBColorToRGBColorTransformer.transform(getHSBColor());
+//    }
 }

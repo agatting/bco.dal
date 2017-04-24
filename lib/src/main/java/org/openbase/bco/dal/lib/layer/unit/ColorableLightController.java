@@ -25,6 +25,7 @@ import java.util.concurrent.Future;
 import org.openbase.bco.dal.lib.layer.service.operation.BrightnessStateOperationService;
 import org.openbase.bco.dal.lib.layer.service.operation.ColorStateOperationService;
 import org.openbase.bco.dal.lib.layer.service.operation.PowerStateOperationService;
+import org.openbase.bco.dal.lib.transform.HSBColorToRGBColorTransformer;
 import org.openbase.bco.registry.remote.Registries;
 import org.openbase.jul.exception.CouldNotPerformException;
 import org.openbase.jul.exception.InitializationException;
@@ -50,8 +51,11 @@ import rst.domotic.unit.UnitConfigType.UnitConfig;
 import rst.domotic.unit.UnitTemplateConfigType.UnitTemplateConfig;
 import rst.domotic.unit.dal.ColorableLightDataType.ColorableLightData;
 import rst.domotic.unit.device.DeviceClassType.DeviceClass;
+import rst.vision.ColorType;
 import rst.vision.ColorType.Color;
+import rst.vision.HSBColorType;
 import rst.vision.HSBColorType.HSBColor;
+import rst.vision.RGBColorType;
 import rst.vision.RGBColorType.RGBColor;
 
 /**
@@ -264,4 +268,26 @@ public class ColorableLightController extends AbstractDALUnitController<Colorabl
             throw new NotAvailableException("brightnessState", ex);
         }
     }
+
+    //////////
+    // START DEFAULT INTERFACE METHODS
+
+    public ColorType.Color getColor() throws NotAvailableException {
+        return getColorState().getColor();
+    }
+
+    public HSBColorType.HSBColor getHSBColor() throws NotAvailableException {
+        return getColorState().getColor().getHsbColor();
+    }
+
+    public RGBColorType.RGBColor getRGBColor() throws NotAvailableException {
+        return getColorState().getColor().getRgbColor();
+    }
+
+    public java.awt.Color getJavaAWTColor() throws CouldNotPerformException {
+        return HSBColorToRGBColorTransformer.transform(getHSBColor());
+    }
+
+    // END DEFAULT INTERFACE METHODS
+    //////////
 }

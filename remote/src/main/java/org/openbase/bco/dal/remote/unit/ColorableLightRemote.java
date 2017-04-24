@@ -23,6 +23,7 @@ package org.openbase.bco.dal.remote.unit;
  */
 import java.util.concurrent.Future;
 import org.openbase.bco.dal.lib.layer.unit.ColorableLight;
+import org.openbase.bco.dal.lib.transform.HSBColorToRGBColorTransformer;
 import org.openbase.jul.exception.CouldNotPerformException;
 import org.openbase.jul.exception.NotAvailableException;
 import org.openbase.jul.extension.rsb.com.RPCHelper;
@@ -110,4 +111,27 @@ public class ColorableLightRemote extends AbstractUnitRemote<ColorableLightData>
             throw new NotAvailableException("BrightnessState", ex);
         }
     }
+
+
+    //////////
+    // START DEFAULT INTERFACE METHODS
+
+    public ColorType.Color getColor() throws NotAvailableException {
+        return getColorState().getColor();
+    }
+
+    public HSBColorType.HSBColor getHSBColor() throws NotAvailableException {
+        return getColorState().getColor().getHsbColor();
+    }
+
+    public RGBColorType.RGBColor getRGBColor() throws NotAvailableException {
+        return getColorState().getColor().getRgbColor();
+    }
+
+    public java.awt.Color getJavaAWTColor() throws CouldNotPerformException {
+        return HSBColorToRGBColorTransformer.transform(getHSBColor());
+    }
+
+    // END DEFAULT INTERFACE METHODS
+    //////////
 }

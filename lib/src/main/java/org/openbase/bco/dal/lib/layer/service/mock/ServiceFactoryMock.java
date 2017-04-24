@@ -39,6 +39,7 @@ import org.openbase.bco.dal.lib.layer.service.operation.StandbyStateOperationSer
 import org.openbase.bco.dal.lib.layer.service.operation.TargetTemperatureStateOperationService;
 import org.openbase.bco.dal.lib.layer.service.provider.ProviderService;
 import org.openbase.bco.dal.lib.layer.unit.Unit;
+import org.openbase.bco.dal.lib.transform.HSBColorToRGBColorTransformer;
 import org.openbase.jul.exception.*;
 import org.openbase.jul.exception.InstantiationException;
 import org.openbase.jul.exception.printer.ExceptionPrinter;
@@ -53,6 +54,9 @@ import rst.domotic.state.ColorStateType.ColorState;
 import rst.domotic.state.PowerStateType.PowerState;
 import rst.domotic.state.StandbyStateType;
 import rst.domotic.state.TemperatureStateType.TemperatureState;
+import rst.vision.ColorType;
+import rst.vision.HSBColorType;
+import rst.vision.RGBColorType;
 
 /**
  *
@@ -132,6 +136,22 @@ public class ServiceFactoryMock implements ServiceFactory {
             @Override
             public Future<Void> setColorState(ColorState state) throws CouldNotPerformException {
                 return update(TimestampProcessor.updateTimestampWithCurrentTime(state), unit);
+            }
+
+            public ColorType.Color getColor() throws NotAvailableException {
+                return getColorState().getColor();
+            }
+
+            public HSBColorType.HSBColor getHSBColor() throws NotAvailableException {
+                return getColorState().getColor().getHsbColor();
+            }
+
+            public RGBColorType.RGBColor getRGBColor() throws NotAvailableException {
+                return getColorState().getColor().getRgbColor();
+            }
+
+            public java.awt.Color getJavaAWTColor() throws CouldNotPerformException {
+                return HSBColorToRGBColorTransformer.transform(getHSBColor());
             }
         };
     }
