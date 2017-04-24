@@ -59,27 +59,33 @@ public interface Location extends BaseUnit<LocationData>,
     @Deprecated
     public List<String> getNeighborLocationIds() throws CouldNotPerformException;
 
-    @Override
-    default public Set<ServiceTemplateType.ServiceTemplate.ServiceType> getSupportedServiceTypes() throws NotAvailableException, InterruptedException {
-        final Set<ServiceTemplate.ServiceType> serviceTypeSet = new HashSet<>();
-        try {
-            for (final ServiceConfig serviceConfig : getConfig().getServiceConfigList()) {
-                serviceTypeSet.add(serviceConfig.getServiceTemplate().getType());
-            }
-        } catch (CouldNotPerformException ex) {
-            throw new NotAvailableException("SupportedServiceTypes", new CouldNotPerformException("Could not generate supported service type list!", ex));
-        }
-        return serviceTypeSet;
-    }
+//    @Override
+//    default public Set<ServiceTemplateType.ServiceTemplate.ServiceType> getSupportedServiceTypes() throws NotAvailableException, InterruptedException {
+//        final Set<ServiceTemplate.ServiceType> serviceTypeSet = new HashSet<>();
+//        try {
+//            for (final ServiceConfig serviceConfig : getConfig().getServiceConfigList()) {
+//                serviceTypeSet.add(serviceConfig.getServiceTemplate().getType());
+//            }
+//        } catch (CouldNotPerformException ex) {
+//            throw new NotAvailableException("SupportedServiceTypes", new CouldNotPerformException("Could not generate supported service type list!", ex));
+//        }
+//        return serviceTypeSet;
+//    }
+//
+//    @Override
+//    default public PresenceState getPresenceState() throws NotAvailableException {
+//        try {
+//            return getData().getPresenceState();
+//        } catch (CouldNotPerformException ex) {
+//            throw new NotAvailableException("PresenceState", ex);
+//        }
+//    }
 
     @Override
-    default public PresenceState getPresenceState() throws NotAvailableException {
-        try {
-            return getData().getPresenceState();
-        } catch (CouldNotPerformException ex) {
-            throw new NotAvailableException("PresenceState", ex);
-        }
-    }
+    public Set<ServiceTemplateType.ServiceTemplate.ServiceType> getSupportedServiceTypes() throws NotAvailableException, InterruptedException;
+
+    @Override
+    public PresenceState getPresenceState() throws NotAvailableException;
 
     @RPCMethod
     public Future<Snapshot> recordSnapshot(final UnitTemplate.UnitType unitType) throws CouldNotPerformException, InterruptedException;

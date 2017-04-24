@@ -1,6 +1,7 @@
 package org.openbase.bco.dal.remote.unit.location;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Future;
@@ -21,6 +22,7 @@ import rsb.converter.DefaultConverterRepository;
 import rsb.converter.ProtocolBufferConverter;
 import rst.domotic.action.ActionConfigType;
 import rst.domotic.action.SnapshotType.Snapshot;
+import rst.domotic.service.ServiceConfigType;
 import rst.domotic.service.ServiceTemplateType;
 import rst.domotic.state.*;
 import rst.domotic.unit.UnitConfigType.UnitConfig;
@@ -403,6 +405,28 @@ public class LocationRemote extends AbstractUnitRemote<LocationData> implements 
     @Override
     public IlluminanceStateType.IlluminanceState getIlluminanceState(UnitTemplateType.UnitTemplate.UnitType unitType) throws NotAvailableException {
         return ((IlluminanceStateProviderServiceCollection) getServiceRemote(ServiceTemplateType.ServiceTemplate.ServiceType.ILLUMINANCE_STATE_SERVICE)).getIlluminanceState(unitType);
+    }
+
+    @Override
+    public Set<ServiceTemplateType.ServiceTemplate.ServiceType> getSupportedServiceTypes() throws NotAvailableException, InterruptedException {
+        final Set<ServiceTemplateType.ServiceTemplate.ServiceType> serviceTypeSet = new HashSet<>();
+        try {
+            for (final ServiceConfigType.ServiceConfig serviceConfig : getConfig().getServiceConfigList()) {
+                serviceTypeSet.add(serviceConfig.getServiceTemplate().getType());
+            }
+        } catch (CouldNotPerformException ex) {
+            throw new NotAvailableException("SupportedServiceTypes", new CouldNotPerformException("Could not generate supported service type list!", ex));
+        }
+        return serviceTypeSet;
+    }
+
+    @Override
+    public PresenceStateType.PresenceState getPresenceState() throws NotAvailableException {
+        try {
+            return getData().getPresenceState();
+        } catch (CouldNotPerformException ex) {
+            throw new NotAvailableException("PresenceState", ex);
+        }
     }
 
     // END DEFAULT INTERFACE METHODS
