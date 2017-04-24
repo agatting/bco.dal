@@ -34,7 +34,8 @@ import rst.domotic.action.ActionConfigType;
 public interface ConsumerService extends Service {
 
     @Override
-    public default Future<Void> applyAction(ActionConfigType.ActionConfig actionConfig) throws CouldNotPerformException, InterruptedException {
-        throw new NotSupportedException("actions", ConsumerService.class);
-    }
+    public Future<Void> applyAction(ActionConfigType.ActionConfig actionConfig) throws CouldNotPerformException, InterruptedException ;
+//    public default Future<Void> applyAction(ActionConfigType.ActionConfig actionConfig) throws CouldNotPerformException, InterruptedException {
+//        throw new NotSupportedException("actions", ConsumerService.class);
+//    }
 }
