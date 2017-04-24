@@ -44,24 +44,36 @@ public interface ColorStateOperationService extends OperationService, ColorState
     public Future<Void> setColorState(final ColorState colorState) throws CouldNotPerformException;
 
     @RPCMethod
-    default public Future<Void> setNeutralWhite() throws CouldNotPerformException {
-        return setColor(DEFAULT_NEUTRAL_WHITE);
-    }
+    public Future<Void> setNeutralWhite() throws CouldNotPerformException;
 
-    default public Future<Void> setColor(final Color color) throws CouldNotPerformException {
-        return setColorState(ColorState.newBuilder().setColor(color).build());
-    }
+    public Future<Void> setColor(final Color color) throws CouldNotPerformException;
 
     @RPCMethod
-    default public Future<Void> setColor(final HSBColor color) throws CouldNotPerformException {
-        return setColor(Color.newBuilder().setType(Color.Type.HSB).setHsbColor(color).build());
-    }
+    public Future<Void> setColor(final HSBColor color) throws CouldNotPerformException;
 
-    default public Future<Void> setColor(final RGBColor color) throws CouldNotPerformException {
-        return setColor(Color.newBuilder().setType(Color.Type.RGB).setRgbColor(color).build());
-    }
+    public Future<Void> setColor(final RGBColor color) throws CouldNotPerformException;
 
-    default public Future<Void> setColor(final java.awt.Color color) throws CouldNotPerformException {
-        return setColor(HSBColorToRGBColorTransformer.transform(color));
-    }
+    public Future<Void> setColor(final java.awt.Color color) throws CouldNotPerformException;
+
+//    @RPCMethod
+//    default public Future<Void> setNeutralWhite() throws CouldNotPerformException {
+//        return setColor(DEFAULT_NEUTRAL_WHITE);
+//    }
+//
+//    default public Future<Void> setColor(final Color color) throws CouldNotPerformException {
+//        return setColorState(ColorState.newBuilder().setColor(color).build());
+//    }
+//
+//    @RPCMethod
+//    default public Future<Void> setColor(final HSBColor color) throws CouldNotPerformException {
+//        return setColor(Color.newBuilder().setType(Color.Type.HSB).setHsbColor(color).build());
+//    }
+//
+//    default public Future<Void> setColor(final RGBColor color) throws CouldNotPerformException {
+//        return setColor(Color.newBuilder().setType(Color.Type.RGB).setRgbColor(color).build());
+//    }
+//
+//    default public Future<Void> setColor(final java.awt.Color color) throws CouldNotPerformException {
+//        return setColor(HSBColorToRGBColorTransformer.transform(color));
+//    }
 }

@@ -50,6 +50,7 @@ import rst.domotic.action.ActionConfigType;
 import rst.domotic.service.ServiceTemplateType.ServiceTemplate.ServiceType;
 import rst.domotic.state.BlindStateType.BlindState;
 import rst.domotic.state.BrightnessStateType.BrightnessState;
+import rst.domotic.state.ColorStateType;
 import rst.domotic.state.ColorStateType.ColorState;
 import rst.domotic.state.PowerStateType.PowerState;
 import rst.domotic.state.StandbyStateType;
@@ -152,6 +153,26 @@ public class ServiceFactoryMock implements ServiceFactory {
 
             public java.awt.Color getJavaAWTColor() throws CouldNotPerformException {
                 return HSBColorToRGBColorTransformer.transform(getHSBColor());
+            }
+
+            public Future<Void> setNeutralWhite() throws CouldNotPerformException {
+                return setColor(DEFAULT_NEUTRAL_WHITE);
+            }
+
+            public Future<Void> setColor(final ColorType.Color color) throws CouldNotPerformException {
+                return setColorState(ColorStateType.ColorState.newBuilder().setColor(color).build());
+            }
+
+            public Future<Void> setColor(final HSBColorType.HSBColor color) throws CouldNotPerformException {
+                return setColor(ColorType.Color.newBuilder().setType(ColorType.Color.Type.HSB).setHsbColor(color).build());
+            }
+
+            public Future<Void> setColor(final RGBColorType.RGBColor color) throws CouldNotPerformException {
+                return setColor(ColorType.Color.newBuilder().setType(ColorType.Color.Type.RGB).setRgbColor(color).build());
+            }
+
+            public Future<Void> setColor(final java.awt.Color color) throws CouldNotPerformException {
+                return setColor(HSBColorToRGBColorTransformer.transform(color));
             }
         };
     }

@@ -132,6 +132,22 @@ public class ColorableLightRemote extends AbstractUnitRemote<ColorableLightData>
         return HSBColorToRGBColorTransformer.transform(getHSBColor());
     }
 
+    public Future<Void> setColor(final ColorType.Color color) throws CouldNotPerformException {
+        return setColorState(ColorState.newBuilder().setColor(color).build());
+    }
+
+    public Future<Void> setColor(final HSBColorType.HSBColor color) throws CouldNotPerformException {
+        return setColor(ColorType.Color.newBuilder().setType(ColorType.Color.Type.HSB).setHsbColor(color).build());
+    }
+
+    public Future<Void> setColor(final RGBColorType.RGBColor color) throws CouldNotPerformException {
+        return setColor(ColorType.Color.newBuilder().setType(ColorType.Color.Type.RGB).setRgbColor(color).build());
+    }
+
+    public Future<Void> setColor(final java.awt.Color color) throws CouldNotPerformException {
+        return setColor(HSBColorToRGBColorTransformer.transform(color));
+    }
+
     // END DEFAULT INTERFACE METHODS
     //////////
 }
