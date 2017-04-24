@@ -592,4 +592,20 @@ public abstract class AbstractServiceRemote<S extends Service, ST extends Genera
         }
         return getClass().getSimpleName() + "[serviceType:" + serviceType.name() + "]";
     }
+
+    ///////////////
+    // START DEFAULT INTERFACE METHODS
+
+    public CompletableFuture<ST> getDataFuture() throws CouldNotPerformException {
+        try {
+            if (!isDataAvailable()) {
+                return requestData();
+            }
+            return CompletableFuture.completedFuture(getData());
+        } catch (CouldNotPerformException ex) {
+            throw new NotAvailableException("data", ex);
+        }
+    }
+    // END DEFAULT INTERACE METHODS
+    ///////////////
 }
