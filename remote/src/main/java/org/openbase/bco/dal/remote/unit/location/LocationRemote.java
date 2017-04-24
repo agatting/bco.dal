@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Future;
 import org.openbase.bco.dal.lib.layer.service.ServiceRemote;
+import org.openbase.bco.dal.lib.layer.service.collection.*;
 import org.openbase.bco.dal.lib.layer.unit.location.Location;
 import org.openbase.bco.dal.lib.transform.HSBColorToRGBColorTransformer;
 import org.openbase.bco.dal.remote.service.ServiceRemoteManager;
@@ -21,18 +22,7 @@ import rsb.converter.ProtocolBufferConverter;
 import rst.domotic.action.ActionConfigType;
 import rst.domotic.action.SnapshotType.Snapshot;
 import rst.domotic.service.ServiceTemplateType;
-import rst.domotic.state.AlarmStateType;
-import rst.domotic.state.BlindStateType;
-import rst.domotic.state.BrightnessStateType;
-import rst.domotic.state.ColorStateType;
-import rst.domotic.state.MotionStateType;
-import rst.domotic.state.PowerConsumptionStateType;
-import rst.domotic.state.PowerStateType;
-import rst.domotic.state.PresenceStateType;
-import rst.domotic.state.SmokeStateType;
-import rst.domotic.state.StandbyStateType;
-import rst.domotic.state.TamperStateType;
-import rst.domotic.state.TemperatureStateType;
+import rst.domotic.state.*;
 import rst.domotic.unit.UnitConfigType.UnitConfig;
 import rst.domotic.unit.UnitTemplateType;
 import rst.domotic.unit.location.LocationDataType;
@@ -215,6 +205,204 @@ public class LocationRemote extends AbstractUnitRemote<LocationData> implements 
 
     public Future<Void> setColor(final java.awt.Color color) throws CouldNotPerformException {
         return setColor(HSBColorToRGBColorTransformer.transform(color));
+    }
+
+    @Override
+    public Future<Void> setBlindState(BlindStateType.BlindState blindState, UnitTemplateType.UnitTemplate.UnitType unitType) throws CouldNotPerformException {
+        return ((BlindStateOperationServiceCollection) getServiceRemote(ServiceTemplateType.ServiceTemplate.ServiceType.BLIND_STATE_SERVICE)).setBlindState(blindState, unitType);
+    }
+
+    @Override
+    public Future<Void> setBlindState(final BlindStateType.BlindState blindState) throws CouldNotPerformException {
+        return ((BlindStateOperationServiceCollection) getServiceRemote(ServiceTemplateType.ServiceTemplate.ServiceType.BLIND_STATE_SERVICE)).setBlindState(blindState);
+    }
+
+    @Override
+    public BlindStateType.BlindState getBlindState() throws NotAvailableException {
+        return ((BlindStateOperationServiceCollection) getServiceRemote(ServiceTemplateType.ServiceTemplate.ServiceType.BLIND_STATE_SERVICE)).getBlindState();
+    }
+
+    @Override
+    public BlindStateType.BlindState getBlindState(final UnitTemplateType.UnitTemplate.UnitType unitType) throws NotAvailableException {
+        return ((BlindStateOperationServiceCollection) getServiceRemote(ServiceTemplateType.ServiceTemplate.ServiceType.BLIND_STATE_SERVICE)).getBlindState(unitType);
+    }
+
+    @Override
+    public Future<Void> setBrightnessState(BrightnessStateType.BrightnessState brightnessState) throws CouldNotPerformException {
+        return ((BrightnessStateOperationServiceCollection) getServiceRemote(ServiceTemplateType.ServiceTemplate.ServiceType.BRIGHTNESS_STATE_SERVICE)).setBrightnessState(brightnessState);
+    }
+
+    @Override
+    public Future<Void> setBrightnessState(BrightnessStateType.BrightnessState brightnessState, UnitTemplateType.UnitTemplate.UnitType unitType) throws CouldNotPerformException {
+        return ((BrightnessStateOperationServiceCollection) getServiceRemote(ServiceTemplateType.ServiceTemplate.ServiceType.BRIGHTNESS_STATE_SERVICE)).setBrightnessState(brightnessState, unitType);
+    }
+
+    @Override
+    public BrightnessStateType.BrightnessState getBrightnessState() throws NotAvailableException {
+        return ((BrightnessStateOperationServiceCollection) getServiceRemote(ServiceTemplateType.ServiceTemplate.ServiceType.BRIGHTNESS_STATE_SERVICE)).getBrightnessState();
+    }
+
+    @Override
+    public BrightnessStateType.BrightnessState getBrightnessState(UnitTemplateType.UnitTemplate.UnitType unitType) throws NotAvailableException {
+        return ((BrightnessStateOperationServiceCollection) getServiceRemote(ServiceTemplateType.ServiceTemplate.ServiceType.BRIGHTNESS_STATE_SERVICE)).getBrightnessState(unitType);
+    }
+
+    @Override
+    public Future<Void> setColorState(ColorStateType.ColorState colorState) throws CouldNotPerformException {
+        return ((ColorStateOperationServiceCollection) getServiceRemote(ServiceTemplateType.ServiceTemplate.ServiceType.COLOR_STATE_SERVICE)).setColorState(colorState);
+    }
+
+    @Override
+    public Future<Void> setColorState(ColorStateType.ColorState colorState, UnitTemplateType.UnitTemplate.UnitType unitType) throws CouldNotPerformException {
+        return ((ColorStateOperationServiceCollection) getServiceRemote(ServiceTemplateType.ServiceTemplate.ServiceType.COLOR_STATE_SERVICE)).setColorState(colorState, unitType);
+    }
+
+    @Override
+    public ColorStateType.ColorState getColorState() throws NotAvailableException {
+        return ((ColorStateOperationServiceCollection) getServiceRemote(ServiceTemplateType.ServiceTemplate.ServiceType.COLOR_STATE_SERVICE)).getColorState();
+    }
+
+    @Override
+    public ColorStateType.ColorState getColorState(final UnitTemplateType.UnitTemplate.UnitType unitType) throws NotAvailableException {
+        return ((ColorStateOperationServiceCollection) getServiceRemote(ServiceTemplateType.ServiceTemplate.ServiceType.COLOR_STATE_SERVICE)).getColorState(unitType);
+    }
+
+    @Override
+    public Future<Void> setPowerState(final PowerStateType.PowerState powerState) throws CouldNotPerformException {
+        return ((PowerStateOperationServiceCollection) getServiceRemote(ServiceTemplateType.ServiceTemplate.ServiceType.POWER_STATE_SERVICE)).setPowerState(powerState);
+    }
+
+    @Override
+    public Future<Void> setPowerState(final PowerStateType.PowerState powerState, final UnitTemplateType.UnitTemplate.UnitType unitType) throws CouldNotPerformException {
+        return ((PowerStateOperationServiceCollection) getServiceRemote(ServiceTemplateType.ServiceTemplate.ServiceType.POWER_STATE_SERVICE)).setPowerState(powerState, unitType);
+    }
+
+    public Future<Void> setPowerState(final PowerStateType.PowerState.State state) throws CouldNotPerformException {
+        return setPowerState(PowerStateType.PowerState.newBuilder().setValue(state).build());
+    }
+
+    public Future<Void> setPowerState(final PowerStateType.PowerState.State state, final UnitTemplateType.UnitTemplate.UnitType unitType) throws CouldNotPerformException {
+        return setPowerState(PowerStateType.PowerState.newBuilder().setValue(state).build(), unitType);
+    }
+
+    @Override
+    public PowerStateType.PowerState getPowerState() throws NotAvailableException {
+        return ((PowerStateOperationServiceCollection) getServiceRemote(ServiceTemplateType.ServiceTemplate.ServiceType.POWER_STATE_SERVICE)).getPowerState();
+    }
+
+    @Override
+    public PowerStateType.PowerState getPowerState(UnitTemplateType.UnitTemplate.UnitType unitType) throws NotAvailableException {
+        return ((PowerStateOperationServiceCollection) getServiceRemote(ServiceTemplateType.ServiceTemplate.ServiceType.POWER_STATE_SERVICE)).getPowerState(unitType);
+    }
+
+    @Override
+    public Future<Void> setStandbyState(StandbyStateType.StandbyState standbyState) throws CouldNotPerformException {
+        return ((StandbyStateOperationServiceCollection) getServiceRemote(ServiceTemplateType.ServiceTemplate.ServiceType.STANDBY_STATE_SERVICE)).setStandbyState(standbyState);
+    }
+
+    @Override
+    public Future<Void> setStandbyState(StandbyStateType.StandbyState state, UnitTemplateType.UnitTemplate.UnitType unitType) throws CouldNotPerformException {
+        return ((StandbyStateOperationServiceCollection) getServiceRemote(ServiceTemplateType.ServiceTemplate.ServiceType.STANDBY_STATE_SERVICE)).setStandbyState(state, unitType);
+    }
+
+    @Override
+    public StandbyStateType.StandbyState getStandbyState() throws NotAvailableException {
+        return ((StandbyStateOperationServiceCollection) getServiceRemote(ServiceTemplateType.ServiceTemplate.ServiceType.STANDBY_STATE_SERVICE)).getStandbyState();
+    }
+
+    @Override
+    public StandbyStateType.StandbyState getStandbyState(UnitTemplateType.UnitTemplate.UnitType unitType) throws NotAvailableException {
+        return ((StandbyStateOperationServiceCollection) getServiceRemote(ServiceTemplateType.ServiceTemplate.ServiceType.STANDBY_STATE_SERVICE)).getStandbyState(unitType);
+    }
+
+    @Override
+    public Future<Void> setTargetTemperatureState(TemperatureStateType.TemperatureState temperatureState) throws CouldNotPerformException {
+        return ((TargetTemperatureStateOperationServiceCollection) getServiceRemote(ServiceTemplateType.ServiceTemplate.ServiceType.TARGET_TEMPERATURE_STATE_SERVICE)).setTargetTemperatureState(temperatureState);
+    }
+
+    @Override
+    public Future<Void> setTargetTemperatureState(TemperatureStateType.TemperatureState temperatureState, UnitTemplateType.UnitTemplate.UnitType unitType) throws CouldNotPerformException {
+        return ((TargetTemperatureStateOperationServiceCollection) getServiceRemote(ServiceTemplateType.ServiceTemplate.ServiceType.TARGET_TEMPERATURE_STATE_SERVICE)).setTargetTemperatureState(temperatureState, unitType);
+    }
+
+    @Override
+    public TemperatureStateType.TemperatureState getTargetTemperatureState() throws NotAvailableException {
+        return ((TargetTemperatureStateOperationServiceCollection) getServiceRemote(ServiceTemplateType.ServiceTemplate.ServiceType.TARGET_TEMPERATURE_STATE_SERVICE)).getTargetTemperatureState();
+    }
+
+    @Override
+    public TemperatureStateType.TemperatureState getTargetTemperatureState(UnitTemplateType.UnitTemplate.UnitType unitType) throws NotAvailableException {
+        return ((TargetTemperatureStateOperationServiceCollection) getServiceRemote(ServiceTemplateType.ServiceTemplate.ServiceType.TARGET_TEMPERATURE_STATE_SERVICE)).getTargetTemperatureState(unitType);
+    }
+
+    @Override
+    public MotionStateType.MotionState getMotionState() throws NotAvailableException {
+        return ((MotionStateProviderServiceCollection) getServiceRemote(ServiceTemplateType.ServiceTemplate.ServiceType.MOTION_STATE_SERVICE)).getMotionState();
+    }
+
+    @Override
+    public MotionStateType.MotionState getMotionState(UnitTemplateType.UnitTemplate.UnitType unitType) throws NotAvailableException {
+        return ((MotionStateProviderServiceCollection) getServiceRemote(ServiceTemplateType.ServiceTemplate.ServiceType.MOTION_STATE_SERVICE)).getMotionState(unitType);
+    }
+
+    @Override
+    public AlarmStateType.AlarmState getSmokeAlarmState() throws NotAvailableException {
+        return ((SmokeAlarmStateProviderServiceCollection) getServiceRemote(ServiceTemplateType.ServiceTemplate.ServiceType.SMOKE_ALARM_STATE_SERVICE)).getSmokeAlarmState();
+    }
+
+    @Override
+    public AlarmStateType.AlarmState getSmokeAlarmState(UnitTemplateType.UnitTemplate.UnitType unitType) throws NotAvailableException {
+        return ((SmokeAlarmStateProviderServiceCollection) getServiceRemote(ServiceTemplateType.ServiceTemplate.ServiceType.SMOKE_ALARM_STATE_SERVICE)).getSmokeAlarmState(unitType);
+    }
+
+    @Override
+    public SmokeStateType.SmokeState getSmokeState() throws NotAvailableException {
+        return ((SmokeStateProviderServiceCollection) getServiceRemote(ServiceTemplateType.ServiceTemplate.ServiceType.SMOKE_STATE_SERVICE)).getSmokeState();
+    }
+
+    @Override
+    public SmokeStateType.SmokeState getSmokeState(UnitTemplateType.UnitTemplate.UnitType unitType) throws NotAvailableException {
+        return ((SmokeStateProviderServiceCollection) getServiceRemote(ServiceTemplateType.ServiceTemplate.ServiceType.SMOKE_STATE_SERVICE)).getSmokeState(unitType);
+    }
+
+    @Override
+    public TemperatureStateType.TemperatureState getTemperatureState() throws NotAvailableException {
+        return ((TemperatureStateProviderServiceCollection) getServiceRemote(ServiceTemplateType.ServiceTemplate.ServiceType.TEMPERATURE_STATE_SERVICE)).getTemperatureState();
+    }
+
+    @Override
+    public TemperatureStateType.TemperatureState getTemperatureState(UnitTemplateType.UnitTemplate.UnitType unitType) throws NotAvailableException {
+        return ((TemperatureStateProviderServiceCollection) getServiceRemote(ServiceTemplateType.ServiceTemplate.ServiceType.TEMPERATURE_STATE_SERVICE)).getTemperatureState(unitType);
+    }
+
+    @Override
+    public PowerConsumptionStateType.PowerConsumptionState getPowerConsumptionState() throws NotAvailableException {
+        return ((PowerConsumptionStateProviderServiceCollection) getServiceRemote(ServiceTemplateType.ServiceTemplate.ServiceType.POWER_CONSUMPTION_STATE_SERVICE)).getPowerConsumptionState();
+    }
+
+    @Override
+    public PowerConsumptionStateType.PowerConsumptionState getPowerConsumptionState(UnitTemplateType.UnitTemplate.UnitType unitType) throws NotAvailableException {
+        return ((PowerConsumptionStateProviderServiceCollection) getServiceRemote(ServiceTemplateType.ServiceTemplate.ServiceType.POWER_CONSUMPTION_STATE_SERVICE)).getPowerConsumptionState(unitType);
+    }
+
+    @Override
+    public TamperStateType.TamperState getTamperState() throws NotAvailableException {
+        return ((TamperStateProviderServiceCollection) getServiceRemote(ServiceTemplateType.ServiceTemplate.ServiceType.TAMPER_STATE_SERVICE)).getTamperState();
+    }
+
+    @Override
+    public TamperStateType.TamperState getTamperState(UnitTemplateType.UnitTemplate.UnitType unitType) throws NotAvailableException {
+        return ((TamperStateProviderServiceCollection) getServiceRemote(ServiceTemplateType.ServiceTemplate.ServiceType.TAMPER_STATE_SERVICE)).getTamperState(unitType);
+    }
+
+    @Override
+    public IlluminanceStateType.IlluminanceState getIlluminanceState() throws NotAvailableException {
+        return ((IlluminanceStateProviderServiceCollection) getServiceRemote(ServiceTemplateType.ServiceTemplate.ServiceType.ILLUMINANCE_STATE_SERVICE)).getIlluminanceState();
+    }
+
+    @Override
+    public IlluminanceStateType.IlluminanceState getIlluminanceState(UnitTemplateType.UnitTemplate.UnitType unitType) throws NotAvailableException {
+        return ((IlluminanceStateProviderServiceCollection) getServiceRemote(ServiceTemplateType.ServiceTemplate.ServiceType.ILLUMINANCE_STATE_SERVICE)).getIlluminanceState(unitType);
     }
 
     // END DEFAULT INTERFACE METHODS
