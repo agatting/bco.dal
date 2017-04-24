@@ -22,18 +22,23 @@ package org.openbase.bco.dal.remote.unit;
  * #L%
  */
 import com.google.protobuf.GeneratedMessage;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+
+import org.openbase.bco.dal.lib.layer.service.Service$;
+import org.openbase.bco.dal.lib.layer.service.ServiceJSonProcessor;
 import org.openbase.bco.registry.remote.Registries;
 import org.openbase.bco.registry.unit.lib.UnitRegistry;
 import org.openbase.bco.registry.unit.remote.UnitRegistryRemote;
 import org.openbase.jps.core.JPService;
-import org.openbase.jul.exception.CouldNotPerformException;
-import org.openbase.jul.exception.FatalImplementationErrorException;
-import org.openbase.jul.exception.InitializationException;
-import org.openbase.jul.exception.InvalidStateException;
-import org.openbase.jul.exception.NotAvailableException;
+import org.openbase.jul.exception.*;
 import org.openbase.jul.exception.printer.ExceptionPrinter;
 import org.openbase.jul.extension.protobuf.processing.GenericMessageProcessor;
 import org.openbase.jul.extension.rsb.com.AbstractConfigurableRemote;
@@ -41,12 +46,17 @@ import org.openbase.jul.extension.rsb.com.RPCHelper;
 import org.openbase.jul.extension.rsb.scope.ScopeGenerator;
 import org.openbase.jul.extension.rsb.scope.ScopeTransformer;
 import org.openbase.jul.extension.rst.iface.ScopeProvider;
+import org.openbase.jul.iface.annotations.RPCMethod;
 import org.openbase.jul.pattern.Observable;
+import org.openbase.jul.schedule.GlobalCachedExecutorService;
 import org.slf4j.LoggerFactory;
 import rsb.Scope;
+import rst.domotic.action.ActionAuthorityType;
 import rst.domotic.action.ActionConfigType;
+import rst.domotic.action.ActionPriorityType;
 import rst.domotic.action.SnapshotType.Snapshot;
 import rst.domotic.registry.UnitRegistryDataType.UnitRegistryData;
+import rst.domotic.service.ServiceTemplateType;
 import rst.domotic.state.EnablingStateType;
 import rst.domotic.unit.UnitConfigType.UnitConfig;
 import rst.domotic.unit.UnitTemplateType.UnitTemplate;
@@ -378,4 +388,56 @@ public abstract class AbstractUnitRemote<M extends GeneratedMessage> extends Abs
     public Future<Snapshot> recordSnapshot() throws CouldNotPerformException, InterruptedException {
         return RPCHelper.callRemoteMethod(this, Snapshot.class);
     }
+
+    ///////////
+    // START DEFAULT INTERFACE METHODS
+
+    public void verifyOperationServiceState(final Object serviceState) throws VerificationFailedException {
+
+        if (serviceState == null) {
+            throw new VerificationFailedException(new NotAvailableException("ServiceState"));
+        }
+
+        final Method valueMethod;
+        try {
+            valueMethod = serviceState.getClass().getMethod("getValue");
+        } catch (NoSuchMethodException ex) {
+            // service state does contain any value so verification is not possible.
+            return;
+        }
+
+        try {
+            verifyOperationServiceStateValue((Enum) valueMethod.invoke(serviceState));
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | ClassCastException ex) {
+            ExceptionPrinter.printHistory("Operation service verification phase failed!", ex, LoggerFactory.getLogger(getClass()));
+        }
+    }
+
+    public void verifyOperationServiceStateValue(final Enum value) throws VerificationFailedException {
+
+        if (value == null) {
+            throw new VerificationFailedException(new NotAvailableException("ServiceStateValue"));
+        }
+
+        if (value.name().equals("UNKNOWN")) {
+            throw new VerificationFailedException("UNKNOWN." + value.getClass().getSimpleName() + " is an invalid operation service state of " + this + "!");
+        }
+    }
+
+    @RPCMethod
+    @Override
+    public Future<Void> restoreSnapshot(final Snapshot snapshot) throws CouldNotPerformException, InterruptedException {
+        try {
+            Collection<Future> futureCollection = new ArrayList<>();
+            for (final ActionConfigType.ActionConfig actionConfig : snapshot.getActionConfigList()) {
+                futureCollection.add(applyAction(actionConfig));
+            }
+            return GlobalCachedExecutorService.allOf(futureCollection);
+        } catch (CouldNotPerformException ex) {
+            throw new CouldNotPerformException("Could not record snapshot!", ex);
+        }
+    }
+
+    // END DEFAULT INTERFACE METHODS
+    /////////////
 }

@@ -30,6 +30,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import org.openbase.bco.dal.lib.layer.service.Service;
 import org.openbase.bco.dal.lib.layer.service.Service$;
@@ -41,12 +42,8 @@ import org.openbase.bco.dal.lib.layer.service.provider.ProviderService$;
 import org.openbase.bco.registry.remote.Registries;
 import org.openbase.bco.registry.unit.remote.CachedUnitRegistryRemote;
 import org.openbase.bco.registry.unit.remote.UnitRegistryRemote;
-import org.openbase.jul.exception.CouldNotPerformException;
-import org.openbase.jul.exception.InitializationException;
+import org.openbase.jul.exception.*;
 import org.openbase.jul.exception.InstantiationException;
-import org.openbase.jul.exception.InvalidStateException;
-import org.openbase.jul.exception.NotAvailableException;
-import org.openbase.jul.exception.NotSupportedException;
 import org.openbase.jul.exception.printer.ExceptionPrinter;
 import org.openbase.jul.extension.rsb.com.AbstractConfigurableController;
 import org.openbase.jul.extension.rsb.com.RPCHelper;
@@ -54,13 +51,19 @@ import org.openbase.jul.extension.rsb.iface.RSBLocalServer;
 import org.openbase.jul.extension.rsb.scope.ScopeGenerator;
 import org.openbase.jul.extension.rsb.scope.ScopeTransformer;
 import org.openbase.jul.extension.rst.iface.ScopeProvider;
+import org.openbase.jul.iface.annotations.RPCMethod;
 import org.openbase.jul.pattern.Observable;
 import org.openbase.jul.processing.StringProcessor;
 import org.openbase.jul.schedule.GlobalCachedExecutorService;
+import org.slf4j.LoggerFactory;
 import rsb.Scope;
 import rsb.converter.DefaultConverterRepository;
 import rsb.converter.ProtocolBufferConverter;
+import rst.domotic.action.ActionAuthorityType;
+import rst.domotic.action.ActionConfigType;
 import rst.domotic.action.ActionConfigType.ActionConfig;
+import rst.domotic.action.ActionPriorityType;
+import rst.domotic.action.SnapshotType;
 import rst.domotic.registry.UnitRegistryDataType;
 import rst.domotic.service.ServiceTemplateType.ServiceTemplate;
 import rst.domotic.state.EnablingStateType;
@@ -376,6 +379,94 @@ public abstract class AbstractUnitController<D extends GeneratedMessage, DB exte
             return getClass().getSimpleName() + "[" + getConfig().getType() + "[" + getLabel() + "]]";
         } catch (NotAvailableException | NullPointerException e) {
             return getClass().getSimpleName() + "[?]";
+        }
+    }
+
+    public void verifyOperationServiceState(final Object serviceState) throws VerificationFailedException {
+
+        if (serviceState == null) {
+            throw new VerificationFailedException(new NotAvailableException("ServiceState"));
+        }
+
+        final Method valueMethod;
+        try {
+            valueMethod = serviceState.getClass().getMethod("getValue");
+        } catch (NoSuchMethodException ex) {
+            // service state does contain any value so verification is not possible.
+            return;
+        }
+
+        try {
+            verifyOperationServiceStateValue((Enum) valueMethod.invoke(serviceState));
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | ClassCastException ex) {
+            ExceptionPrinter.printHistory("Operation service verification phase failed!", ex, LoggerFactory.getLogger(getClass()));
+        }
+    }
+
+    public void verifyOperationServiceStateValue(final Enum value) throws VerificationFailedException {
+
+        if (value == null) {
+            throw new VerificationFailedException(new NotAvailableException("ServiceStateValue"));
+        }
+
+        if (value.name().equals("UNKNOWN")) {
+            throw new VerificationFailedException("UNKNOWN." + value.getClass().getSimpleName() + " is an invalid operation service state of " + this + "!");
+        }
+    }
+
+    @RPCMethod
+    @Override
+    public Future<SnapshotType.Snapshot> recordSnapshot() throws CouldNotPerformException, InterruptedException {
+        MultiException.ExceptionStack exceptionStack = null;
+        SnapshotType.Snapshot.Builder snapshotBuilder = SnapshotType.Snapshot.newBuilder();
+        for (ServiceTemplate serviceTemplate : getTemplate().getServiceTemplateList()) {
+            try {
+                ActionConfigType.ActionConfig.Builder actionConfig = ActionConfigType.ActionConfig.newBuilder().setServiceType(serviceTemplate.getType()).setUnitId(getId());
+
+                // skip non operation services.
+                if (serviceTemplate.getPattern() != ServiceTemplate.ServicePattern.OPERATION) {
+                    continue;
+                }
+
+                // load operation service attribute by related provider service
+                Object serviceAttribute = Service$.invokeServiceMethod(serviceTemplate.getType(), ServiceTemplate.ServicePattern.PROVIDER, this);
+                System.out.println("load[" + serviceAttribute + "] type: " + serviceAttribute.getClass().getSimpleName());
+
+                // verify operation service state (e.g. ignore UNKNOWN service states)
+                verifyOperationServiceState(serviceAttribute);
+
+                // fill action config
+                final ServiceJSonProcessor serviceJSonProcessor = new ServiceJSonProcessor();
+                try {
+                    actionConfig.setServiceAttribute(serviceJSonProcessor.serialize(serviceAttribute));
+                } catch (InvalidStateException ex) {
+                    // skip if serviceAttribute is empty.
+                    continue;
+                }
+                actionConfig.setServiceAttributeType(serviceJSonProcessor.getServiceAttributeType(serviceAttribute));
+                actionConfig.setActionAuthority(ActionAuthorityType.ActionAuthority.newBuilder().setAuthority(ActionAuthorityType.ActionAuthority.Authority.USER)).setActionPriority(ActionPriorityType.ActionPriority.newBuilder().setPriority(ActionPriorityType.ActionPriority.Priority.NORMAL));
+
+                // add action config
+                snapshotBuilder.addActionConfig(actionConfig.build());
+            } catch (CouldNotPerformException ex) {
+                exceptionStack = MultiException.push(this, ex, exceptionStack);
+            }
+        }
+        MultiException.checkAndThrow("Could not record snapshot!", exceptionStack);
+        return CompletableFuture.completedFuture(snapshotBuilder.build());
+    }
+
+    @RPCMethod
+    @Override
+    public Future<Void> restoreSnapshot(final SnapshotType.Snapshot snapshot) throws CouldNotPerformException, InterruptedException {
+        try {
+            Collection<Future> futureCollection = new ArrayList<>();
+            for (final ActionConfigType.ActionConfig actionConfig : snapshot.getActionConfigList()) {
+                futureCollection.add(applyAction(actionConfig));
+            }
+            return GlobalCachedExecutorService.allOf(futureCollection);
+        } catch (CouldNotPerformException ex) {
+            throw new CouldNotPerformException("Could not record snapshot!", ex);
         }
     }
 }
