@@ -29,6 +29,7 @@ import org.openbase.jul.exception.NotAvailableException;
 import org.openbase.jul.extension.rsb.com.RPCHelper;
 import rsb.converter.DefaultConverterRepository;
 import rsb.converter.ProtocolBufferConverter;
+import rst.domotic.state.ActivationStateType;
 import rst.domotic.state.ActivationStateType.ActivationState;
 import rst.domotic.unit.app.AppDataType.AppData;
 
@@ -56,4 +57,14 @@ public class AppRemote extends AbstractUnitRemote<AppData> implements App {
     public ActivationState getActivationState() throws NotAvailableException {
         return getData().getActivationState();
     }
+
+    ////////////
+    // START DEFAULT INTERFACE METHODS
+
+    public Future<Void> setActivationState(final ActivationState.State activation) throws CouldNotPerformException {
+        return setActivationState(ActivationStateType.ActivationState.newBuilder().setValue(activation).build());
+    }
+
+    // END DEFAULT INTERFACE METHODS
+    ///////////
 }

@@ -34,9 +34,10 @@ import rst.domotic.state.ActivationStateType.ActivationState;
  */
 public interface ActivationStateOperationService extends OperationService, ActivationStateProviderService {
 
-    default public Future<Void> setActivationState(final ActivationState.State activation) throws CouldNotPerformException {
-        return setActivationState(ActivationStateType.ActivationState.newBuilder().setValue(activation).build());
-    }
+    public Future<Void> setActivationState(final ActivationState.State activation) throws CouldNotPerformException;
+//    default public Future<Void> setActivationState(final ActivationState.State activation) throws CouldNotPerformException {
+//        return setActivationState(ActivationStateType.ActivationState.newBuilder().setValue(activation).build());
+//    }
 
     @RPCMethod
     public Future<Void> setActivationState(final ActivationState activationState) throws CouldNotPerformException;

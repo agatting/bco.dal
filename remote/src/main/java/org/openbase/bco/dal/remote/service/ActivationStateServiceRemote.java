@@ -34,6 +34,7 @@ import org.openbase.jul.pattern.Observer;
 import org.openbase.jul.pattern.Remote;
 import org.openbase.jul.schedule.GlobalCachedExecutorService;
 import rst.domotic.service.ServiceTemplateType.ServiceTemplate.ServiceType;
+import rst.domotic.state.ActivationStateType;
 import rst.domotic.state.ActivationStateType.ActivationState;
 import rst.domotic.unit.UnitTemplateType.UnitTemplate.UnitType;
 
@@ -147,6 +148,10 @@ public class ActivationStateServiceRemote extends AbstractServiceRemote<Activati
         for (final Remote remote : getInternalUnits()) {
             remote.removeConnectionStateObserver(observer);
         }
+    }
+
+    public Future<Void> setActivationState(final ActivationState.State activation) throws CouldNotPerformException {
+        return setActivationState(ActivationStateType.ActivationState.newBuilder().setValue(activation).build());
     }
     /////////////
     // END DEFAULT INTERFACE METHODS
