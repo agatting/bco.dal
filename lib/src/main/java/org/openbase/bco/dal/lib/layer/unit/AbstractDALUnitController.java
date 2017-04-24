@@ -28,6 +28,7 @@ import java.util.List;
 import org.openbase.bco.dal.lib.layer.service.ServiceFactory;
 import org.openbase.bco.dal.lib.layer.service.ServiceFactoryProvider;
 import org.openbase.bco.dal.lib.layer.service.provider.ProviderService;
+import org.openbase.bco.dal.lib.layer.service.provider.ProviderService$;
 import org.openbase.jul.exception.CouldNotPerformException;
 import org.openbase.jul.exception.InitializationException;
 import org.openbase.jul.exception.InstantiationException;
@@ -112,7 +113,7 @@ public abstract class AbstractDALUnitController<M extends GeneratedMessage, MB e
                 }
 
                 // verify
-                updateMethod = ProviderService.getUpdateMethodName(serviceTemplate.getType());
+                updateMethod = ProviderService$.getUpdateMethodName(serviceTemplate.getType());
                 if (!unitMethods.contains(updateMethod)) {
                     exceptionStack = MultiException.push(serviceTemplate, new NotAvailableException("Method", updateMethod), exceptionStack);
                 }

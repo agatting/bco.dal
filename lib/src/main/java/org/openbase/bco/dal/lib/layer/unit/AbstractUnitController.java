@@ -37,6 +37,7 @@ import org.openbase.bco.dal.lib.layer.service.ServiceJSonProcessor;
 import org.openbase.bco.dal.lib.layer.service.consumer.ConsumerService;
 import org.openbase.bco.dal.lib.layer.service.operation.OperationService;
 import org.openbase.bco.dal.lib.layer.service.provider.ProviderService;
+import org.openbase.bco.dal.lib.layer.service.provider.ProviderService$;
 import org.openbase.bco.registry.remote.Registries;
 import org.openbase.bco.registry.unit.remote.CachedUnitRegistryRemote;
 import org.openbase.bco.registry.unit.remote.UnitRegistryRemote;
@@ -336,7 +337,7 @@ public abstract class AbstractUnitController<D extends GeneratedMessage, DB exte
     public Method getUpdateMethod(final ServiceTemplate.ServiceType serviceType, Class serviceArgumentClass) throws CouldNotPerformException {
         try {
             Method updateMethod;
-            String updateMethodName = ProviderService.getUpdateMethodName(serviceType);
+            String updateMethodName = ProviderService$.getUpdateMethodName(serviceType);
             try {
                 updateMethod = getClass().getMethod(updateMethodName, serviceArgumentClass);
                 if (updateMethod == null) {

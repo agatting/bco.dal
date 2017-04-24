@@ -21,23 +21,35 @@ package org.openbase.bco.dal.lib.layer.service.provider;
  * <http://www.gnu.org/licenses/lgpl-3.0.html>.
  * #L%
  */
-import java.util.concurrent.Future;
+
 import org.openbase.bco.dal.lib.layer.service.Service;
 import org.openbase.bco.dal.lib.layer.service.Service$;
 import org.openbase.jul.exception.CouldNotPerformException;
-import org.openbase.jul.exception.NotSupportedException;
 import rst.domotic.action.ActionConfigType;
 import rst.domotic.service.ServiceTemplateType;
+
+import java.util.concurrent.Future;
 
 /**
  *
  * * @author <a href="mailto:pleminoq@openbase.org">Tamino Huxohl</a>
  */
-public interface ProviderService extends Service {
+public class ProviderService$ {
 
-    @Override
-    public Future<Void> applyAction(ActionConfigType.ActionConfig actionConfig) throws CouldNotPerformException, InterruptedException;
-//    public default Future<Void> applyAction(ActionConfigType.ActionConfig actionConfig) throws CouldNotPerformException, InterruptedException {
-//        throw new NotSupportedException("actions", ProviderService.class);
-//    }
+    /**
+     * The prefix of each update method.
+     */
+    public static final String UPDATE_METHOD_PREFIX = "update";
+
+    /**
+     * Method returns the update method name of the given service provider.
+     *
+     * This method should provide each unit controller which implements this provider service.
+     *
+     * @param serviceType the related service type for the update method.
+     * @return the name of the update method.
+     */
+    public static String getUpdateMethodName(final ServiceTemplateType.ServiceTemplate.ServiceType serviceType) {
+        return UPDATE_METHOD_PREFIX + Service$.getServiceBaseName(serviceType) + "Provider";
+    }
 }

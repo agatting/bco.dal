@@ -37,15 +37,15 @@ import org.openbase.bco.dal.lib.layer.service.operation.ColorStateOperationServi
 import org.openbase.bco.dal.lib.layer.service.operation.PowerStateOperationService;
 import org.openbase.bco.dal.lib.layer.service.operation.StandbyStateOperationService;
 import org.openbase.bco.dal.lib.layer.service.operation.TargetTemperatureStateOperationService;
+import org.openbase.bco.dal.lib.layer.service.provider.ProviderService;
 import org.openbase.bco.dal.lib.layer.unit.Unit;
-import org.openbase.jul.exception.CouldNotPerformException;
+import org.openbase.jul.exception.*;
 import org.openbase.jul.exception.InstantiationException;
-import org.openbase.jul.exception.InvalidStateException;
-import org.openbase.jul.exception.NotAvailableException;
 import org.openbase.jul.exception.printer.ExceptionPrinter;
 import org.openbase.jul.extension.rst.processing.TimestampProcessor;
 import org.openbase.jul.schedule.GlobalScheduledExecutorService;
 import org.slf4j.LoggerFactory;
+import rst.domotic.action.ActionConfigType;
 import rst.domotic.service.ServiceTemplateType.ServiceTemplate.ServiceType;
 import rst.domotic.state.BlindStateType.BlindState;
 import rst.domotic.state.BrightnessStateType.BrightnessState;
@@ -71,6 +71,11 @@ public class ServiceFactoryMock implements ServiceFactory {
     @Override
     public <UNIT extends BrightnessStateOperationService & Unit> BrightnessStateOperationService newBrightnessService(final UNIT unit) throws org.openbase.jul.exception.InstantiationException {
         return new BrightnessStateOperationService() {
+
+            @Override
+            public Future<Void> applyAction(ActionConfigType.ActionConfig actionConfig) throws CouldNotPerformException, InterruptedException {
+                throw new NotSupportedException("actions", ProviderService.class);
+            }
 
             @Override
             public BrightnessState getBrightnessState() throws NotAvailableException {
@@ -115,6 +120,11 @@ public class ServiceFactoryMock implements ServiceFactory {
         return new ColorStateOperationService() {
 
             @Override
+            public Future<Void> applyAction(ActionConfigType.ActionConfig actionConfig) throws CouldNotPerformException, InterruptedException {
+                throw new NotSupportedException("actions", ProviderService.class);
+            }
+
+            @Override
             public ColorState getColorState() throws NotAvailableException {
                 return ((ColorStateOperationService) unit).getColorState();
             }
@@ -135,6 +145,11 @@ public class ServiceFactoryMock implements ServiceFactory {
         return new PowerStateOperationService() {
 
             @Override
+            public Future<Void> applyAction(ActionConfigType.ActionConfig actionConfig) throws CouldNotPerformException, InterruptedException {
+                throw new NotSupportedException("actions", ProviderService.class);
+            }
+
+            @Override
             public PowerState getPowerState() throws NotAvailableException {
                 return ((PowerStateOperationService) unit).getPowerState();
             }
@@ -149,6 +164,11 @@ public class ServiceFactoryMock implements ServiceFactory {
     @Override
     public <UNIT extends BlindStateOperationService & Unit> BlindStateOperationService newShutterService(final UNIT unit) throws org.openbase.jul.exception.InstantiationException {
         return new BlindStateOperationService() {
+
+            @Override
+            public Future<Void> applyAction(ActionConfigType.ActionConfig actionConfig) throws CouldNotPerformException, InterruptedException {
+                throw new NotSupportedException("actions", ProviderService.class);
+            }
 
             @Override
             public BlindState getBlindState() throws NotAvailableException {
@@ -167,6 +187,11 @@ public class ServiceFactoryMock implements ServiceFactory {
         return new StandbyStateOperationService() {
 
             @Override
+            public Future<Void> applyAction(ActionConfigType.ActionConfig actionConfig) throws CouldNotPerformException, InterruptedException {
+                throw new NotSupportedException("actions", ProviderService.class);
+            }
+
+            @Override
             public StandbyStateType.StandbyState getStandbyState() throws NotAvailableException {
                 return ((StandbyStateOperationService) unit).getStandbyState();
             }
@@ -181,6 +206,11 @@ public class ServiceFactoryMock implements ServiceFactory {
     @Override
     public <UNIT extends TargetTemperatureStateOperationService & Unit> TargetTemperatureStateOperationService newTargetTemperatureService(final UNIT unit) throws org.openbase.jul.exception.InstantiationException {
         return new TargetTemperatureStateOperationService() {
+
+            @Override
+            public Future<Void> applyAction(ActionConfigType.ActionConfig actionConfig) throws CouldNotPerformException, InterruptedException {
+                throw new NotSupportedException("actions", ProviderService.class);
+            }
 
             @Override
             public TemperatureState getTargetTemperatureState() throws NotAvailableException {
