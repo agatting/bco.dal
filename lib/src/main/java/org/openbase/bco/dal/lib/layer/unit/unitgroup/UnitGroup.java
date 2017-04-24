@@ -36,16 +36,19 @@ import org.openbase.bco.dal.lib.layer.unit.MultiUnitServiceFusion;
  */
 public interface UnitGroup extends BaseUnit<UnitGroupData>, MultiUnitServiceFusion {
 
+//    @Override
+//    default public Set<ServiceTemplateType.ServiceTemplate.ServiceType> getSupportedServiceTypes() throws NotAvailableException, InterruptedException {
+//        final Set<ServiceTemplateType.ServiceTemplate.ServiceType> serviceTypeSet = new HashSet<>();
+//        try {
+//            for (final ServiceTemplate serviceTemplate : getConfig().getUnitGroupConfig().getServiceTemplateList()) {
+//                serviceTypeSet.add(serviceTemplate.getType());
+//            }
+//        } catch (CouldNotPerformException ex) {
+//            throw new NotAvailableException("SupportedServiceTypes", new CouldNotPerformException("Could not generate supported service type list!", ex));
+//        }
+//        return serviceTypeSet;
+//    }
+
     @Override
-    default public Set<ServiceTemplateType.ServiceTemplate.ServiceType> getSupportedServiceTypes() throws NotAvailableException, InterruptedException {
-        final Set<ServiceTemplateType.ServiceTemplate.ServiceType> serviceTypeSet = new HashSet<>();
-        try {
-            for (final ServiceTemplate serviceTemplate : getConfig().getUnitGroupConfig().getServiceTemplateList()) {
-                serviceTypeSet.add(serviceTemplate.getType());
-            }
-        } catch (CouldNotPerformException ex) {
-            throw new NotAvailableException("SupportedServiceTypes", new CouldNotPerformException("Could not generate supported service type list!", ex));
-        }
-        return serviceTypeSet;
-    }
+    public Set<ServiceTemplateType.ServiceTemplate.ServiceType> getSupportedServiceTypes() throws NotAvailableException, InterruptedException;
 }

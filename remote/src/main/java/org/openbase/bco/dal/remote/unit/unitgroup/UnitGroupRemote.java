@@ -22,6 +22,7 @@ package org.openbase.bco.dal.remote.unit.unitgroup;
  * #L%
  */
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Future;
@@ -452,6 +453,19 @@ public class UnitGroupRemote extends AbstractUnitRemote<UnitGroupData> implement
     @Override
     public IlluminanceStateType.IlluminanceState getIlluminanceState(UnitTemplateType.UnitTemplate.UnitType unitType) throws NotAvailableException {
         return ((IlluminanceStateProviderServiceCollection) getServiceRemote(ServiceTemplateType.ServiceTemplate.ServiceType.ILLUMINANCE_STATE_SERVICE)).getIlluminanceState(unitType);
+    }
+
+    @Override
+    public Set<ServiceTemplateType.ServiceTemplate.ServiceType> getSupportedServiceTypes() throws NotAvailableException, InterruptedException {
+        final Set<ServiceTemplateType.ServiceTemplate.ServiceType> serviceTypeSet = new HashSet<>();
+        try {
+            for (final ServiceTemplateType.ServiceTemplate serviceTemplate : getConfig().getUnitGroupConfig().getServiceTemplateList()) {
+                serviceTypeSet.add(serviceTemplate.getType());
+            }
+        } catch (CouldNotPerformException ex) {
+            throw new NotAvailableException("SupportedServiceTypes", new CouldNotPerformException("Could not generate supported service type list!", ex));
+        }
+        return serviceTypeSet;
     }
 
     // END DEFAULT INTERFACE METHODS
