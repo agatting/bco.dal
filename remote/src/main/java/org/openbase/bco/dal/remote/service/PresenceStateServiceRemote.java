@@ -23,7 +23,7 @@ package org.openbase.bco.dal.remote.service;
  */
 
 import java.util.Collection;
-import java.util.concurrent.CompletableFuture;
+import java8.util.concurrent.CompletableFuture;
 
 import org.openbase.bco.dal.lib.layer.service.collection.PresenceStateProviderServiceCollection;
 import org.openbase.bco.dal.lib.layer.service.provider.PresenceStateProviderService;

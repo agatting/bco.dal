@@ -210,6 +210,16 @@
             <artifactId>jul.extension.rst.container</artifactId>
             <version>${dependency.jul.version}</version>
         </dependency>
+        <dependency>
+            <groupId>net.sourceforge.streamsupport</groupId>
+            <artifactId>streamsupport</artifactId>
+            <version>1.5.4</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sourceforge.streamsupport</groupId>
+            <artifactId>streamsupport-cfuture</artifactId>
+            <version>1.5.4</version>
+        </dependency>
     </dependencies>
 
     <distributionManagement>

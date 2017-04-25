@@ -24,7 +24,7 @@ package org.openbase.bco.dal.lib.layer.unit;
 import com.google.protobuf.Descriptors;
 import com.google.protobuf.GeneratedMessage;
 import java.util.concurrent.Callable;
-import java.util.concurrent.CompletableFuture;
+import java8.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import org.openbase.jul.exception.CouldNotPerformException;

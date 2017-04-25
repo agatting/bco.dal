@@ -23,7 +23,7 @@ package org.openbase.bco.dal.lib.layer.service;
  */
 import com.google.protobuf.GeneratedMessage;
 import java.util.Collection;
-import java.util.concurrent.CompletableFuture;
+import java8.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import org.openbase.bco.dal.lib.layer.unit.UnitRemote;
 import org.openbase.jul.exception.CouldNotPerformException;

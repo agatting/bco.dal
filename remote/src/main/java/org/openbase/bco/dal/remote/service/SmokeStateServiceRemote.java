@@ -22,7 +22,7 @@ package org.openbase.bco.dal.remote.service;
  * #L%
  */
 import java.util.Collection;
-import java.util.concurrent.CompletableFuture;
+import java8.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import org.openbase.bco.dal.lib.layer.service.collection.SmokeStateProviderServiceCollection;
 import org.openbase.bco.dal.lib.layer.service.provider.SmokeStateProviderService;
