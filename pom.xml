@@ -177,9 +177,9 @@
     <modules>
         <module>remote</module>
         <module>lib</module>
-        <module>task</module>
-        <module>visual</module>
-        <module>example</module>
+        <!--<module>task</module>-->
+        <!--<module>visual</module>-->
+        <!--<module>example</module>-->
     </modules>
 
     <properties>

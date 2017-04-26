@@ -43,6 +43,7 @@ import rst.domotic.state.MotionStateType.MotionState;
 import rst.domotic.state.MotionStateType.MotionStateOrBuilder;
 import rst.domotic.state.PresenceStateType.PresenceState;
 import rst.domotic.state.PresenceStateType.PresenceStateOrBuilder;
+import rst.domotic.unit.location.LocationDataType;
 import rst.domotic.unit.location.LocationDataType.LocationData;
 
 /**
@@ -92,8 +93,11 @@ public class PresenceDetector implements Manageable<DataProvider<LocationData>>,
             }
         };
 
-        locationDataObserver = (Observable<LocationData> source, LocationData data) -> {
-            updateMotionState(data.getMotionState());
+        locationDataObserver = new Observer<LocationData>() {
+            @Override
+            public void update(Observable<LocationData> source, LocationData data) throws Exception {
+                PresenceDetector.this.updateMotionState(data.getMotionState());
+            }
         };
     }
 

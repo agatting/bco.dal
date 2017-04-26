@@ -35,6 +35,7 @@ import org.openbase.jul.exception.CouldNotTransformException;
 import org.openbase.jul.exception.NotAvailableException;
 import org.openbase.jul.exception.TypeNotSupportedException;
 import org.openbase.jul.extension.rst.processing.TimestampProcessor;
+import org.openbase.jul.iface.Processable;
 import org.openbase.jul.pattern.Observer;
 import org.openbase.jul.pattern.Remote;
 import org.openbase.jul.schedule.GlobalCachedExecutorService;
@@ -75,12 +76,22 @@ public class ColorStateServiceRemote extends AbstractServiceRemote<ColorStateOpe
 
     @Override
     public Future<Void> setColorState(ColorState colorState) throws CouldNotPerformException {
-        return GlobalCachedExecutorService.allOf(getServices(), (ColorStateOperationService input) -> input.setColorState(colorState));
+        return GlobalCachedExecutorService.allOf(getServices(), new Processable<ColorStateOperationService, Future<Void>>() {
+            @Override
+            public Future<Void> process(ColorStateOperationService input) throws CouldNotPerformException, InterruptedException {
+                return input.setColorState(colorState);
+            }
+        });
     }
 
     @Override
     public Future<Void> setColorState(final ColorState colorState, final UnitType unitType) throws CouldNotPerformException {
-        return GlobalCachedExecutorService.allOf(getServices(unitType), (ColorStateOperationService input) -> input.setColorState(colorState));
+        return GlobalCachedExecutorService.allOf(getServices(unitType), new Processable<ColorStateOperationService, Future<Void>>() {
+            @Override
+            public Future<Void> process(ColorStateOperationService input) throws CouldNotPerformException, InterruptedException {
+                return input.setColorState(colorState);
+            }
+        });
     }
 
     @Override

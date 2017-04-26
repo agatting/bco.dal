@@ -104,13 +104,16 @@ public abstract class AbstractExecutableBaseUnitController<D extends GeneratedMe
                     } else {
                         if (isExecuting()) {
                             cancelExecution();
-                            result = GlobalCachedExecutorService.submit(() -> {
-                                try {
-                                    stop();
-                                } catch (CouldNotPerformException ex) {
-                                    ExceptionPrinter.printHistory(new CouldNotPerformException("Could not stop [" + getLabel() + "]", ex), logger);
+                            result = GlobalCachedExecutorService.submit(new Callable<Void>() {
+                                @Override
+                                public Void call() throws Exception {
+                                    try {
+                                        AbstractExecutableBaseUnitController.this.stop();
+                                    } catch (CouldNotPerformException ex) {
+                                        ExceptionPrinter.printHistory(new CouldNotPerformException("Could not stop [" + AbstractExecutableBaseUnitController.this.getLabel() + "]", ex), logger);
+                                    }
+                                    return null;
                                 }
-                                return null;
                             });
                         }
                     }

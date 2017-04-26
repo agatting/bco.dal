@@ -35,6 +35,7 @@ import org.openbase.jul.exception.NotAvailableException;
 import org.openbase.jul.extension.rst.processing.MetaConfigPool;
 import org.openbase.jul.extension.rst.processing.MetaConfigVariableProvider;
 import org.openbase.jul.extension.rst.processing.TimestampProcessor;
+import org.openbase.jul.iface.Processable;
 import org.openbase.jul.pattern.Observer;
 import org.openbase.jul.pattern.Remote;
 import org.openbase.jul.schedule.GlobalCachedExecutorService;
@@ -112,12 +113,22 @@ public class PowerStateServiceRemote extends AbstractServiceRemote<PowerStateOpe
 
     @Override
     public Future<Void> setPowerState(PowerState powerState) throws CouldNotPerformException {
-        return GlobalCachedExecutorService.allOf(super.getServices(), (PowerStateOperationService input) -> input.setPowerState(powerState));
+        return GlobalCachedExecutorService.allOf(super.getServices(), new Processable<PowerStateOperationService, Future<Void>>() {
+            @Override
+            public Future<Void> process(PowerStateOperationService input) throws CouldNotPerformException, InterruptedException {
+                return input.setPowerState(powerState);
+            }
+        });
     }
 
     @Override
     public Future<Void> setPowerState(final PowerState powerState, final UnitType unitType) throws CouldNotPerformException {
-        return GlobalCachedExecutorService.allOf(super.getServices(unitType), (PowerStateOperationService input) -> input.setPowerState(powerState));
+        return GlobalCachedExecutorService.allOf(super.getServices(unitType), new Processable<PowerStateOperationService, Future<Void>>() {
+            @Override
+            public Future<Void> process(PowerStateOperationService input) throws CouldNotPerformException, InterruptedException {
+                return input.setPowerState(powerState);
+            }
+        });
     }
 
     /**

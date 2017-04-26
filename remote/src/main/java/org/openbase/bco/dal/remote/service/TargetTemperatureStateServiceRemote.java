@@ -31,6 +31,7 @@ import org.openbase.bco.dal.remote.unit.UnitRemote;
 import org.openbase.jul.exception.CouldNotPerformException;
 import org.openbase.jul.exception.NotAvailableException;
 import org.openbase.jul.extension.rst.processing.TimestampProcessor;
+import org.openbase.jul.iface.Processable;
 import org.openbase.jul.pattern.Observer;
 import org.openbase.jul.pattern.Remote;
 import org.openbase.jul.schedule.GlobalCachedExecutorService;
@@ -54,12 +55,22 @@ public class TargetTemperatureStateServiceRemote extends AbstractServiceRemote<T
 
     @Override
     public Future<Void> setTargetTemperatureState(final TemperatureState temperatureState) throws CouldNotPerformException {
-        return GlobalCachedExecutorService.allOf(getServices(), (TargetTemperatureStateOperationService input) -> input.setTargetTemperatureState(temperatureState));
+        return GlobalCachedExecutorService.allOf(getServices(), new Processable<TargetTemperatureStateOperationService, Future<Void>>() {
+            @Override
+            public Future<Void> process(TargetTemperatureStateOperationService input) throws CouldNotPerformException, InterruptedException {
+                return input.setTargetTemperatureState(temperatureState);
+            }
+        });
     }
 
     @Override
     public Future<Void> setTargetTemperatureState(final TemperatureState temperatureState, final UnitType unitType) throws CouldNotPerformException {
-        return GlobalCachedExecutorService.allOf(getServices(unitType), (TargetTemperatureStateOperationService input) -> input.setTargetTemperatureState(temperatureState));
+        return GlobalCachedExecutorService.allOf(getServices(unitType), new Processable<TargetTemperatureStateOperationService, Future<Void>>() {
+            @Override
+            public Future<Void> process(TargetTemperatureStateOperationService input) throws CouldNotPerformException, InterruptedException {
+                return input.setTargetTemperatureState(temperatureState);
+            }
+        });
     }
 
     /**

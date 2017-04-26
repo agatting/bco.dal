@@ -31,6 +31,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 import java8.util.concurrent.CompletableFuture;
+
+import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import org.openbase.bco.dal.lib.layer.service.Service;
 import org.openbase.bco.dal.lib.layer.service.Service$;
@@ -53,6 +55,7 @@ import org.openbase.jul.extension.rsb.scope.ScopeTransformer;
 import org.openbase.jul.extension.rst.iface.ScopeProvider;
 import org.openbase.jul.iface.annotations.RPCMethod;
 import org.openbase.jul.pattern.Observable;
+import org.openbase.jul.pattern.Observer;
 import org.openbase.jul.processing.StringProcessor;
 import org.openbase.jul.schedule.GlobalCachedExecutorService;
 import org.slf4j.LoggerFactory;
@@ -162,14 +165,17 @@ public abstract class AbstractUnitController<D extends GeneratedMessage, DB exte
     protected void postInit() throws InitializationException, InterruptedException {
         try {
             super.postInit();
-            this.unitRegistry.addDataObserver((Observable<UnitRegistryDataType.UnitRegistryData> source, UnitRegistryDataType.UnitRegistryData data) -> {
-                try {
-                    final UnitConfig newUnitConfig = CachedUnitRegistryRemote.getRegistry().getUnitConfigById(getId());
-                    if (!newUnitConfig.equals(getConfig())) {
-                        applyConfigUpdate(newUnitConfig);
+            this.unitRegistry.addDataObserver(new Observer<UnitRegistryDataType.UnitRegistryData>() {
+                @Override
+                public void update(Observable<UnitRegistryDataType.UnitRegistryData> source, UnitRegistryDataType.UnitRegistryData data) throws Exception {
+                    try {
+                        final UnitConfig newUnitConfig = CachedUnitRegistryRemote.getRegistry().getUnitConfigById(AbstractUnitController.this.getId());
+                        if (!newUnitConfig.equals(AbstractUnitController.this.getConfig())) {
+                            AbstractUnitController.this.applyConfigUpdate(newUnitConfig);
+                        }
+                    } catch (CouldNotPerformException ex) {
+                        ExceptionPrinter.printHistory("Could not update unit config of " + AbstractUnitController.this, ex, logger);
                     }
-                } catch (CouldNotPerformException ex) {
-                    ExceptionPrinter.printHistory("Could not update unit config of " + this, ex, logger);
                 }
             });
         } catch (CouldNotPerformException ex) {
@@ -364,9 +370,12 @@ public abstract class AbstractUnitController<D extends GeneratedMessage, DB exte
             // Since its an action it has to be an operation service pattern
             final ServiceTemplate serviceTemplate = ServiceTemplate.newBuilder().setType(actionConfig.getServiceType()).setPattern(ServiceTemplate.ServicePattern.OPERATION).build();
 
-            return GlobalCachedExecutorService.submit(() -> {
-                Service$.invokeServiceMethod(serviceTemplate, AbstractUnitController.this, attribute);
-                return null;
+            return GlobalCachedExecutorService.submit(new Callable<Void>() {
+                @Override
+                public Void call() throws Exception {
+                    Service$.invokeServiceMethod(serviceTemplate, AbstractUnitController.this, attribute);
+                    return null;
+                }
             });
         } catch (CouldNotPerformException ex) {
             throw new CouldNotPerformException("Could not apply action!", ex);

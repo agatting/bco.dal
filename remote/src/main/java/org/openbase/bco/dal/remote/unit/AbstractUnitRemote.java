@@ -48,6 +48,7 @@ import org.openbase.jul.extension.rsb.scope.ScopeTransformer;
 import org.openbase.jul.extension.rst.iface.ScopeProvider;
 import org.openbase.jul.iface.annotations.RPCMethod;
 import org.openbase.jul.pattern.Observable;
+import org.openbase.jul.pattern.Observer;
 import org.openbase.jul.schedule.GlobalCachedExecutorService;
 import org.slf4j.LoggerFactory;
 import rsb.Scope;
@@ -55,6 +56,7 @@ import rst.domotic.action.ActionAuthorityType;
 import rst.domotic.action.ActionConfigType;
 import rst.domotic.action.ActionPriorityType;
 import rst.domotic.action.SnapshotType.Snapshot;
+import rst.domotic.registry.UnitRegistryDataType;
 import rst.domotic.registry.UnitRegistryDataType.UnitRegistryData;
 import rst.domotic.service.ServiceTemplateType;
 import rst.domotic.state.EnablingStateType;
@@ -190,14 +192,17 @@ public abstract class AbstractUnitRemote<M extends GeneratedMessage> extends Abs
     protected void postInit() throws InitializationException, InterruptedException {
         super.postInit();
         this.setMessageProcessor(new GenericMessageProcessor<>(getDataClass()));
-        ((UnitRegistryRemote) unitRegistry).addDataObserver((Observable<UnitRegistryData> source, UnitRegistryData data) -> {
-            try {
-                final UnitConfig newUnitConfig = unitRegistry.getUnitConfigById(getId());
-                if (!newUnitConfig.equals(getConfig())) {
-                    applyConfigUpdate(newUnitConfig);
+        ((UnitRegistryRemote) unitRegistry).addDataObserver(new Observer<UnitRegistryData>() {
+            @Override
+            public void update(Observable<UnitRegistryData> source, UnitRegistryData data) throws Exception {
+                try {
+                    final UnitConfig newUnitConfig = unitRegistry.getUnitConfigById(AbstractUnitRemote.this.getId());
+                    if (!newUnitConfig.equals(AbstractUnitRemote.this.getConfig())) {
+                        AbstractUnitRemote.this.applyConfigUpdate(newUnitConfig);
+                    }
+                } catch (CouldNotPerformException ex) {
+                    ExceptionPrinter.printHistory("Could not update unit config of " + AbstractUnitRemote.this, ex, logger);
                 }
-            } catch (CouldNotPerformException ex) {
-                ExceptionPrinter.printHistory("Could not update unit config of " + this, ex, logger);
             }
         });
     }

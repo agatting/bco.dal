@@ -33,6 +33,9 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+
+import java8.util.function.Consumer;
+import java8.util.stream.StreamSupport;
 import org.openbase.bco.dal.lib.layer.service.Service;
 import org.openbase.bco.dal.lib.layer.service.Service$;
 import org.openbase.bco.dal.lib.layer.unit.UnitProcessor;
@@ -58,6 +61,7 @@ import rst.domotic.action.ActionConfigType;
 import rst.domotic.action.ActionConfigType.ActionConfig;
 import rst.domotic.action.SnapshotType;
 import rst.domotic.action.SnapshotType.Snapshot;
+import rst.domotic.service.ServiceConfigType;
 import rst.domotic.service.ServiceTemplateType;
 import rst.domotic.service.ServiceTemplateType.ServiceTemplate.ServiceType;
 import rst.domotic.unit.UnitConfigType.UnitConfig;
@@ -86,8 +90,11 @@ public abstract class ServiceRemoteManager implements Activatable, Snapshotable<
         this.serviceRemoteMap = new HashMap<>();
         this.serviceRemoteFactory = ServiceRemoteFactoryImpl.getInstance();
 
-        serviceDataObserver = (Observer) (Observable source, Object data) -> {
-            notifyServiceUpdate(source, data);
+        serviceDataObserver = new Observer() {
+            @Override
+            public void update(Observable source, Object data) throws Exception {
+                ServiceRemoteManager.this.notifyServiceUpdate(source, data);
+            }
         };
     }
 
@@ -123,9 +130,12 @@ public abstract class ServiceRemoteManager implements Activatable, Snapshotable<
                 }
 
                 // sort dal unit by service type
-                unitConfig.getServiceConfigList().stream().forEach((serviceConfig) -> {
-                    // register unit for service type. UnitConfigs are may added twice because of dublicated type of different service pattern but are filtered by the set. 
-                    serviceMap.get(serviceConfig.getServiceTemplate().getType()).add(unitConfig);
+                StreamSupport.stream(unitConfig.getServiceConfigList()).forEach(new Consumer<ServiceConfigType.ServiceConfig>() {
+                    @Override
+                    public void accept(ServiceConfigType.ServiceConfig serviceConfig) {
+                        // register unit for service type. UnitConfigs are may added twice because of dublicated type of different service pattern but are filtered by the set.
+                        serviceMap.get(serviceConfig.getServiceTemplate().getType()).add(unitConfig);
+                    }
                 });
             }
 
@@ -250,8 +260,11 @@ public abstract class ServiceRemoteManager implements Activatable, Snapshotable<
 
             if (unitType == UnitTemplateType.UnitTemplate.UnitType.UNKNOWN) {
                 // if the type is unknown then take the snapshot for all units
-                getServiceRemoteList().stream().forEach((serviceRemote) -> {
-                    unitRemoteSet.addAll(serviceRemote.getInternalUnits());
+                StreamSupport.stream(getServiceRemoteList()).forEach(new Consumer<AbstractServiceRemote>() {
+                    @Override
+                    public void accept(AbstractServiceRemote serviceRemote) {
+                        unitRemoteSet.addAll(serviceRemote.getInternalUnits());
+                    }
                 });
             } else {
                 // for effiecency reasons only one serviceType implemented by the unitType is regarded because the unitRemote is part of

@@ -31,6 +31,7 @@ import org.openbase.bco.dal.lib.layer.unit.UnitRemote;
 import org.openbase.jul.exception.CouldNotPerformException;
 import org.openbase.jul.exception.NotAvailableException;
 import org.openbase.jul.extension.rst.processing.TimestampProcessor;
+import org.openbase.jul.iface.Processable;
 import org.openbase.jul.pattern.Observer;
 import org.openbase.jul.pattern.Remote;
 import org.openbase.jul.schedule.GlobalCachedExecutorService;
@@ -55,12 +56,22 @@ public class BrightnessStateServiceRemote extends AbstractServiceRemote<Brightne
 
     @Override
     public Future<Void> setBrightnessState(final BrightnessState brightnessState) throws CouldNotPerformException {
-        return GlobalCachedExecutorService.allOf(getServices(), (BrightnessStateOperationService input) -> input.setBrightnessState(brightnessState));
+        return GlobalCachedExecutorService.allOf(getServices(), new Processable<BrightnessStateOperationService, Future<Void>>() {
+            @Override
+            public Future<Void> process(BrightnessStateOperationService input) throws CouldNotPerformException, InterruptedException {
+                return input.setBrightnessState(brightnessState);
+            }
+        });
     }
 
     @Override
     public Future<Void> setBrightnessState(final BrightnessState brightnessState, final UnitType unitType) throws CouldNotPerformException {
-        return GlobalCachedExecutorService.allOf(getServices(unitType), (BrightnessStateOperationService input) -> input.setBrightnessState(brightnessState));
+        return GlobalCachedExecutorService.allOf(getServices(unitType), new Processable<BrightnessStateOperationService, Future<Void>>() {
+            @Override
+            public Future<Void> process(BrightnessStateOperationService input) throws CouldNotPerformException, InterruptedException {
+                return input.setBrightnessState(brightnessState);
+            }
+        });
     }
 
     /**

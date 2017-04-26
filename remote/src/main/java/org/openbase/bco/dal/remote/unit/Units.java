@@ -23,8 +23,12 @@ package org.openbase.bco.dal.remote.unit;
  */
 import com.google.protobuf.GeneratedMessage;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+import java8.util.function.Consumer;
+import java8.util.stream.StreamSupport;
 import org.openbase.bco.dal.remote.unit.agent.AgentRemote;
 import org.openbase.bco.dal.remote.unit.app.AppRemote;
 import org.openbase.bco.dal.remote.unit.connection.ConnectionRemote;
@@ -191,12 +195,15 @@ public class Units {
             @Override
             public void shutdown() {
                 try {
-                    unitRemoteRegistry.getEntries().stream().parallel().forEach(((org.openbase.bco.dal.lib.layer.unit.UnitRemote unitRemote) -> {
-                        try {
-                            unitRemote.unlock(unitRemoteRegistry);
-                            unitRemote.shutdown();
-                        } catch (CouldNotPerformException ex) {
-                            ExceptionPrinter.printHistory("Could not properly shutdown " + unitRemote, ex, LOGGER);
+                    StreamSupport.stream(unitRemoteRegistry.getEntries()).parallel().forEach((new Consumer<UnitRemote>() {
+                        @Override
+                        public void accept(UnitRemote unitRemote) {
+                            try {
+                                unitRemote.unlock(unitRemoteRegistry);
+                                unitRemote.shutdown();
+                            } catch (CouldNotPerformException ex) {
+                                ExceptionPrinter.printHistory("Could not properly shutdown " + unitRemote, ex, LOGGER);
+                            }
                         }
                     }));
                 } catch (Exception ex) {
@@ -655,7 +662,12 @@ public class Units {
      * @throws InterruptedException is thrown in case the thread is externally interrupted
      */
     public static Future<UnitRemote<?>> getFutureUnit(final String unitId, final boolean waitForData) throws NotAvailableException, InterruptedException {
-        return GlobalCachedExecutorService.submit(() -> getUnit(unitId, waitForData));
+        return GlobalCachedExecutorService.submit(new Callable<UnitRemote<?>>() {
+            @Override
+            public UnitRemote<?> call() throws Exception {
+                return getUnit(unitId, waitForData);
+            }
+        });
     }
 
     /**
@@ -673,7 +685,12 @@ public class Units {
      * @throws InterruptedException is thrown in case the thread is externally interrupted
      */
     public static Future<UnitRemote<?>> getFutureUnit(final UnitConfig unitConfig, final boolean waitForData) throws NotAvailableException, InterruptedException {
-        return GlobalCachedExecutorService.submit(() -> getUnit(unitConfig, waitForData));
+        return GlobalCachedExecutorService.submit(new Callable<UnitRemote<?>>() {
+            @Override
+            public UnitRemote<?> call() throws Exception {
+                return getUnit(unitConfig, waitForData);
+            }
+        });
     }
 
     /**
@@ -691,7 +708,12 @@ public class Units {
      * @see #getUnit(rst.domotic.unit.UnitConfigType.UnitConfig, boolean)
      */
     public static <UR extends UnitRemote<?>> Future<UR> getFutureUnit(final UnitConfig unitConfig, final boolean waitForData, final Class<UR> unitRemoteClass) throws NotAvailableException, InterruptedException {
-        return GlobalCachedExecutorService.submit(() -> getUnit(unitConfig, waitForData, unitRemoteClass));
+        return GlobalCachedExecutorService.submit(new Callable<UR>() {
+            @Override
+            public UR call() throws Exception {
+                return getUnit(unitConfig, waitForData, unitRemoteClass);
+            }
+        });
     }
 
     /**
@@ -709,7 +731,12 @@ public class Units {
      * @see #getUnit(java.lang.String, boolean)
      */
     public static <UR extends UnitRemote<?>> Future<UR> getFutureUnit(final String unitId, boolean waitForData, final Class<UR> unitRemoteClass) throws NotAvailableException, InterruptedException {
-        return GlobalCachedExecutorService.submit(() -> getUnit(unitId, waitForData, unitRemoteClass));
+        return GlobalCachedExecutorService.submit(new Callable<UR>() {
+            @Override
+            public UR call() throws Exception {
+                return getUnit(unitId, waitForData, unitRemoteClass);
+            }
+        });
     }
 
     /**
@@ -728,7 +755,12 @@ public class Units {
      * @throws InterruptedException is thrown in case the thread is externally interrupted.
      */
     public static Future<UnitRemote> getFutureUnitByLabelAndType(final String label, final UnitType unitType, boolean waitForData) throws NotAvailableException, InterruptedException {
-        return GlobalCachedExecutorService.submit(() -> getUnitByLabelAndType(label, unitType, waitForData));
+        return GlobalCachedExecutorService.submit(new Callable<UnitRemote>() {
+            @Override
+            public UnitRemote call() throws Exception {
+                return getUnitByLabelAndType(label, unitType, waitForData);
+            }
+        });
     }
 
     /**
@@ -746,7 +778,12 @@ public class Units {
      * @throws InterruptedException is thrown in case the thread is externally interrupted.
      */
     public static Future<UnitRemote> getFutureUnitByLabel(final String label, boolean waitForData) throws NotAvailableException, InterruptedException {
-        return GlobalCachedExecutorService.submit(() -> getUnitByLabel(label, waitForData));
+        return GlobalCachedExecutorService.submit(new Callable<UnitRemote>() {
+            @Override
+            public UnitRemote call() throws Exception {
+                return getUnitByLabel(label, waitForData);
+            }
+        });
     }
 
     /**
@@ -764,7 +801,12 @@ public class Units {
      * @see #getUnitByLabel(java.lang.String, boolean)
      */
     public static <UR extends UnitRemote<?>> Future<UR> getFutureUnitByLabel(final String label, boolean waitForData, final Class<UR> unitRemoteClass) throws NotAvailableException, InterruptedException {
-        return GlobalCachedExecutorService.submit(() -> getUnitByLabel(label, waitForData, unitRemoteClass));
+        return GlobalCachedExecutorService.submit(new Callable<UR>() {
+            @Override
+            public UR call() throws Exception {
+                return getUnitByLabel(label, waitForData, unitRemoteClass);
+            }
+        });
     }
 
     /**
@@ -782,7 +824,12 @@ public class Units {
      * @throws InterruptedException is thrown in case the thread is externally interrupted.
      */
     public static Future<UnitRemote<?>> getFutureUnitByScope(final ScopeType.Scope scope, boolean waitForData) throws NotAvailableException, InterruptedException {
-        return GlobalCachedExecutorService.submit(() -> getUnitByScope(scope, waitForData));
+        return GlobalCachedExecutorService.submit(new Callable<UnitRemote<?>>() {
+            @Override
+            public UnitRemote<?> call() throws Exception {
+                return getUnitByScope(scope, waitForData);
+            }
+        });
     }
 
     /**
@@ -800,7 +847,12 @@ public class Units {
      * @throws InterruptedException is thrown in case the thread is externally interrupted.
      */
     public static Future<UnitRemote<?>> getFutureUnitByScope(final Scope scope, boolean waitForData) throws NotAvailableException, InterruptedException {
-        return GlobalCachedExecutorService.submit(() -> getUnitByScope(scope, waitForData));
+        return GlobalCachedExecutorService.submit(new Callable<UnitRemote<?>>() {
+            @Override
+            public UnitRemote<?> call() throws Exception {
+                return getUnitByScope(scope, waitForData);
+            }
+        });
     }
 
     /**
@@ -818,7 +870,12 @@ public class Units {
      * @throws InterruptedException is thrown in case the thread is externally interrupted.
      */
     public static Future<UnitRemote<?>> getFutureUnitByScope(final String scope, boolean waitForData) throws NotAvailableException, InterruptedException {
-        return GlobalCachedExecutorService.submit(() -> getUnitByScope(scope, waitForData));
+        return GlobalCachedExecutorService.submit(new Callable<UnitRemote<?>>() {
+            @Override
+            public UnitRemote<?> call() throws Exception {
+                return getUnitByScope(scope, waitForData);
+            }
+        });
     }
 
     /**
@@ -837,7 +894,12 @@ public class Units {
      * @throws InterruptedException is thrown in case the thread is externally interrupted.
      */
     public Future<UnitRemote<?>> getFutureUnitByLabelAndLocationScope(final String label, final String locationScope, boolean waitForData) throws NotAvailableException, InterruptedException {
-        return GlobalCachedExecutorService.submit(() -> getUnitByLabelAndLocationScope(label, locationScope, waitForData));
+        return GlobalCachedExecutorService.submit(new Callable<UnitRemote<?>>() {
+            @Override
+            public UnitRemote<?> call() throws Exception {
+                return Units.this.getUnitByLabelAndLocationScope(label, locationScope, waitForData);
+            }
+        });
     }
 
     /**

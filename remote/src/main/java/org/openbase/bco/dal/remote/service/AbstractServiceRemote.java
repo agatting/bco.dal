@@ -32,6 +32,11 @@ import java8.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+
+import java8.util.function.Consumer;
+import java8.util.function.Function;
+import java8.util.function.Predicate;
+import java8.util.stream.StreamSupport;
 import org.openbase.bco.dal.lib.layer.service.Service;
 import org.openbase.bco.dal.lib.layer.service.ServiceRemote;
 import org.openbase.bco.dal.lib.layer.unit.UnitRemote;
@@ -55,6 +60,7 @@ import org.openbase.jul.schedule.SyncObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rst.domotic.action.ActionConfigType.ActionConfig;
+import rst.domotic.service.ServiceConfigType;
 import rst.domotic.service.ServiceTemplateType.ServiceTemplate.ServiceType;
 import rst.domotic.unit.UnitConfigType.UnitConfig;
 import rst.domotic.unit.UnitTemplateType.UnitTemplate.UnitType;
@@ -94,8 +100,11 @@ public abstract class AbstractServiceRemote<S extends Service, ST extends Genera
         this.unitRemoteMap = new HashMap<>();
         this.unitRemoteTypeMap = new HashMap<>();
         this.serviceMap = new HashMap<>();
-        this.dataObserver = (Observer) (Observable source, Object data) -> {
-            updateServiceState();
+        this.dataObserver = new Observer() {
+            @Override
+            public void update(Observable source, Object data) throws Exception {
+                AbstractServiceRemote.this.updateServiceState();
+            }
         };
         this.serviceStateObservable.setExecutorService(GlobalCachedExecutorService.getInstance().getExecutorService());
     }
@@ -317,13 +326,19 @@ public abstract class AbstractServiceRemote<S extends Service, ST extends Genera
     public void activate() throws CouldNotPerformException, InterruptedException {
         verifyMaintainability();
         active = true;
-        unitRemoteMap.values().stream().map((remote) -> {
-            if (!remote.isEnabled()) {
-                logger.warn("Using a disabled " + remote + " in " + this + " is not recommended and should be avoided!");
+        StreamSupport.stream(unitRemoteMap.values()).map(new Function<UnitRemote, UnitRemote>() {
+            @Override
+            public UnitRemote apply(UnitRemote remote) {
+                if (!remote.isEnabled()) {
+                    logger.warn("Using a disabled " + remote + " in " + AbstractServiceRemote.this + " is not recommended and should be avoided!");
+                }
+                return remote;
             }
-            return remote;
-        }).forEach((remote) -> {
-            remote.addDataObserver(dataObserver);
+        }).forEach(new Consumer<UnitRemote>() {
+            @Override
+            public void accept(UnitRemote remote) {
+                remote.addDataObserver(dataObserver);
+            }
         });
         updateServiceState();
     }
@@ -338,8 +353,11 @@ public abstract class AbstractServiceRemote<S extends Service, ST extends Genera
     public void deactivate() throws CouldNotPerformException, InterruptedException {
         verifyMaintainability();
         active = false;
-        unitRemoteMap.values().stream().forEach((remote) -> {
-            remote.removeDataObserver(dataObserver);
+        StreamSupport.stream(unitRemoteMap.values()).forEach(new Consumer<UnitRemote>() {
+            @Override
+            public void accept(UnitRemote remote) {
+                remote.removeDataObserver(dataObserver);
+            }
         });
     }
 
@@ -497,7 +515,12 @@ public abstract class AbstractServiceRemote<S extends Service, ST extends Genera
      */
     @Override
     public boolean isConnected() {
-        return getInternalUnits().stream().noneMatch((unitRemote) -> (!unitRemote.isConnected()));
+        return StreamSupport.stream(getInternalUnits()).noneMatch(new Predicate<UnitRemote>() {
+            @Override
+            public boolean test(UnitRemote unitRemote) {
+                return (!unitRemote.isConnected());
+            }
+        });
     }
 
     /**
@@ -516,7 +539,12 @@ public abstract class AbstractServiceRemote<S extends Service, ST extends Genera
     }
 
     public static boolean verifyServiceCompatibility(final UnitConfig unitConfig, final ServiceType serviceType) {
-        return unitConfig.getServiceConfigList().stream().anyMatch((serviceConfig) -> (serviceConfig.getServiceTemplate().getType() == serviceType));
+        return StreamSupport.stream(unitConfig.getServiceConfigList()).anyMatch(new Predicate<ServiceConfigType.ServiceConfig>() {
+            @Override
+            public boolean test(ServiceConfigType.ServiceConfig serviceConfig) {
+                return (serviceConfig.getServiceTemplate().getType() == serviceType);
+            }
+        });
     }
 
     /**

@@ -31,6 +31,7 @@ import org.openbase.bco.dal.lib.layer.unit.UnitRemote;
 import org.openbase.jul.exception.CouldNotPerformException;
 import org.openbase.jul.exception.NotAvailableException;
 import org.openbase.jul.extension.rst.processing.TimestampProcessor;
+import org.openbase.jul.iface.Processable;
 import org.openbase.jul.pattern.Observer;
 import org.openbase.jul.pattern.Remote;
 import org.openbase.jul.schedule.GlobalCachedExecutorService;
@@ -50,12 +51,22 @@ public class StandbyStateServiceRemote extends AbstractServiceRemote<StandbyStat
 
     @Override
     public Future<Void> setStandbyState(final StandbyState state) throws CouldNotPerformException {
-        return GlobalCachedExecutorService.allOf(super.getServices(), (StandbyStateOperationService input) -> input.setStandbyState(state));
+        return GlobalCachedExecutorService.allOf(super.getServices(), new Processable<StandbyStateOperationService, Future<Void>>() {
+            @Override
+            public Future<Void> process(StandbyStateOperationService input) throws CouldNotPerformException, InterruptedException {
+                return input.setStandbyState(state);
+            }
+        });
     }
 
     @Override
     public Future<Void> setStandbyState(final StandbyState state, final UnitType unitType) throws CouldNotPerformException {
-        return GlobalCachedExecutorService.allOf(super.getServices(unitType), (StandbyStateOperationService input) -> input.setStandbyState(state));
+        return GlobalCachedExecutorService.allOf(super.getServices(unitType), new Processable<StandbyStateOperationService, Future<Void>>() {
+            @Override
+            public Future<Void> process(StandbyStateOperationService input) throws CouldNotPerformException, InterruptedException {
+                return input.setStandbyState(state);
+            }
+        });
     }
 
     public Collection<StandbyStateOperationService> getStandbyStateOperationServices() {
