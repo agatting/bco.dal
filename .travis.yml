@@ -11,6 +11,18 @@ jdk:
 install:
   - mvn --settings .travis/settings.xml install -DskipTests=true -Dmaven.javadoc.skip=true -B -U -V -q
 before_install:
+  - git clone -b feature-marshmallow-support --single-branch https://github.com/openbase/jps.git
+  - cd jps
+  - mvn clean install -q -DskipTests
+  - cd ..
+  - git clone -b feature-marshmallow-support --single-branch https://github.com/openbase/jul.git
+  - cd jul
+  - mvn clean install -q -DskipTests
+  - cd ..
+  - git clone -b feature-marshmallow-support --single-branch https://github.com/openbase/bco.registry.git
+  - cd bco.registry
+  - mvn clean install -q -DskipTests
+  - cd ..
   - echo $GPG_SECRET_KEYS | base64 --decode | $GPG_EXECUTABLE --import
   - echo $GPG_OWNERTRUST | base64 --decode | $GPG_EXECUTABLE --import-ownertrust
 

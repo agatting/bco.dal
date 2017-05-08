@@ -624,16 +624,20 @@ public abstract class AbstractServiceRemote<S extends Service, ST extends Genera
     ///////////////
     // START DEFAULT INTERFACE METHODS
 
-    public CompletableFuture<ST> getDataFuture() throws CouldNotPerformException {
+    public CompletableFuture<ST> getDataFuture() {
         try {
             if (!isDataAvailable()) {
                 return requestData();
             }
             return CompletableFuture.completedFuture(getData());
+
         } catch (CouldNotPerformException ex) {
-            throw new NotAvailableException("data", ex);
+            CompletableFuture future = new CompletableFuture();
+            future.completeExceptionally(ex);
+            return future;
         }
     }
+
     // END DEFAULT INTERACE METHODS
     ///////////////
 }
