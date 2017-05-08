@@ -33,8 +33,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Consumer;
+import java8.util.function.Consumer;
 
+import java8.util.stream.StreamSupport;
 import org.openbase.bco.dal.lib.layer.service.ServiceFactoryProvider;
 import org.openbase.bco.dal.lib.transform.UnitConfigToUnitClassTransformer;
 import org.openbase.bco.registry.unit.remote.CachedUnitRegistryRemote;
@@ -178,7 +179,7 @@ public abstract class AbstractHostUnitController<D extends GeneratedMessage, DB 
 
     protected Set<String> getRemovedUnitIds() {
         Set<String> removedUnitIds = new HashSet<>();
-        hostedUnitDiff.getRemovedMessageMap().getMessages().forEach(new Consumer<UnitConfig>() {
+        StreamSupport.stream(hostedUnitDiff.getRemovedMessageMap().getMessages()).forEach(new Consumer<UnitConfig>() {
             @Override
             public void accept(UnitConfig removedUnitConfig) {
                 removedUnitIds.add(removedUnitConfig.getId());
@@ -189,7 +190,7 @@ public abstract class AbstractHostUnitController<D extends GeneratedMessage, DB 
 
     protected Set<AbstractUnitController> getNewUnitController() {
         Set<AbstractUnitController> newUnitController = new HashSet<>();
-        hostedUnitDiff.getNewMessageMap().getMessages().forEach(new Consumer<UnitConfig>() {
+        StreamSupport.stream(hostedUnitDiff.getNewMessageMap().getMessages()).forEach(new Consumer<UnitConfig>() {
             @Override
             public void accept(UnitConfig newUnitConfig) {
                 newUnitController.add(unitMap.get(newUnitConfig.getId()));
