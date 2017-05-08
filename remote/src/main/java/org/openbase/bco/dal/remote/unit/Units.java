@@ -59,9 +59,9 @@ import rst.domotic.unit.UnitTemplateType.UnitTemplate.UnitType;
 import rst.rsb.ScopeType;
 import org.openbase.bco.dal.lib.layer.unit.UnitRemote;
 import org.openbase.bco.registry.remote.Registries;
-import org.openbase.jul.extension.rct.GlobalTransformReceiver;
 import org.openbase.jul.schedule.GlobalCachedExecutorService;
 import rct.Transform;
+import rst.domotic.registry.LocationRegistryDataType;
 
 /**
  * @author <a href="mailto:divine@openbase.org">Divine Threepwood</a>
@@ -81,6 +81,7 @@ public class Units {
     public static final Class<? extends AgentRemote> BASE_UNIT_AGENT = AgentRemote.class;
     public static final Class<? extends AppRemote> BASE_UNIT_APP = AppRemote.class;
     public static final Class<? extends SceneRemote> BASE_UNIT_SCENE = SceneRemote.class;
+    public static final Class<? extends UnitGroupRemote> BASE_UNIT_UNITGROUP = UnitGroupRemote.class;
     public static final Class<? extends UserRemote> BASE_UNIT_USER = UserRemote.class;
     public static final Class<? extends DeviceRemote> BASE_UNIT_DEVICE = DeviceRemote.class;
     public static final Class<? extends LocationRemote> BASE_UNIT_LOCATION = LocationRemote.class;
@@ -93,6 +94,7 @@ public class Units {
     public static final Class<? extends AgentRemote> UNIT_BASE_AGENT = BASE_UNIT_AGENT;
     public static final Class<? extends AppRemote> UNIT_BASE_APP = BASE_UNIT_APP;
     public static final Class<? extends SceneRemote> UNIT_BASE_SCENE = BASE_UNIT_SCENE;
+    public static final Class<? extends UnitGroupRemote> UNIT_UNITGROUP = BASE_UNIT_UNITGROUP;
     public static final Class<? extends UserRemote> UNIT_BASE_USER = BASE_UNIT_USER;
     public static final Class<? extends DeviceRemote> UNIT_BASE_DEVICE = BASE_UNIT_DEVICE;
     public static final Class<? extends LocationRemote> UNIT_BASE_LOCATION = BASE_UNIT_LOCATION;
@@ -105,6 +107,7 @@ public class Units {
     public static final Class<? extends AgentRemote> AGENT = BASE_UNIT_AGENT;
     public static final Class<? extends AppRemote> APP = BASE_UNIT_APP;
     public static final Class<? extends SceneRemote> SCENE = BASE_UNIT_SCENE;
+    public static final Class<? extends UnitGroupRemote> UNITGROUP = BASE_UNIT_UNITGROUP;
     public static final Class<? extends UserRemote> USER = BASE_UNIT_USER;
     public static final Class<? extends DeviceRemote> DEVICE = BASE_UNIT_DEVICE;
     public static final Class<? extends LocationRemote> LOCATION = BASE_UNIT_LOCATION;
@@ -936,13 +939,14 @@ public class Units {
      * @throws NotAvailableException is thrown if the transformation is not available for could not be computed.
      * @throws InterruptedException is thrown if the thread was externally interrupted.
      */
-    public Future<Transform> getUnitTransformation(final UnitConfig unitConfig) throws NotAvailableException, InterruptedException {
+    public static Future<Transform> getUnitTransformation(final UnitConfig unitConfig) throws NotAvailableException, InterruptedException {
+        final Future<LocationRegistryDataType.LocationRegistryData> dataFuture;
         try {
-            Registries.getLocationRegistry().waitForData();
-            return getUnitTransformation(Registries.getLocationRegistry().getRootLocationConfig(), unitConfig);
+            dataFuture = Registries.getLocationRegistry().getDataFuture();
         } catch (CouldNotPerformException ex) {
             throw new NotAvailableException("UnitTransformation", ex);
         }
+        return GlobalCachedExecutorService.allOfInclusiveResultFuture(Registries.getLocationRegistry().getUnitTransformation(unitConfig), dataFuture);
     }
 
     /**
@@ -954,15 +958,13 @@ public class Units {
      * @throws NotAvailableException is thrown if the transformation is not available for could not be computed.
      * @throws InterruptedException is thrown if the thread was externally interrupted.
      */
-    public Future<Transform> getUnitTransformation(final UnitConfig unitConfigA, final UnitConfig unitConfigB) throws NotAvailableException, InterruptedException {
+    public static Future<Transform> getUnitTransformation(final UnitConfig unitConfigA, final UnitConfig unitConfigB) throws NotAvailableException, InterruptedException {
+        final Future<LocationRegistryDataType.LocationRegistryData> dataFuture;
         try {
-            Future<Transform> transformationFuture = GlobalTransformReceiver.getInstance().requestTransform(
-                    unitConfigA.getPlacementConfig().getTransformationFrameId(),
-                    unitConfigB.getPlacementConfig().getTransformationFrameId(),
-                    System.currentTimeMillis());
-            return GlobalCachedExecutorService.allOfInclusiveResultFuture(transformationFuture, Registries.getLocationRegistry().getDataFuture());
+            dataFuture = Registries.getLocationRegistry().getDataFuture();
         } catch (CouldNotPerformException ex) {
             throw new NotAvailableException("UnitTransformation", ex);
         }
+        return GlobalCachedExecutorService.allOfInclusiveResultFuture(Registries.getLocationRegistry().getUnitTransformation(unitConfigA, unitConfigB), dataFuture);
     }
 }
