@@ -22,7 +22,6 @@ package org.openbase.bco.dal.lib.simulation.service;
  * #L%
  */
 import com.google.protobuf.GeneratedMessage;
-import org.openbase.bco.dal.lib.layer.service.Service;
 import org.openbase.bco.dal.lib.layer.service.Service$;
 import org.openbase.bco.dal.lib.layer.unit.UnitController;
 import org.openbase.jul.exception.CouldNotPerformException;
@@ -62,11 +61,11 @@ public class GenericServiceSimulator extends AbstractRandomServiceSimulator<Gene
     private void detectAndRegisterServiceStates(final ServiceType serviceType) throws CouldNotPerformException {
         try {
             final MultiException.ExceptionStack exceptionStack = new MultiException.ExceptionStack();
-            Service$.getServiceStateValues(serviceType).forEach((stateValue) -> {
+            for (Enum stateValue : Service$.getServiceStateValues(serviceType)) {
                 try {
                     // filter unknown state values
                     if (stateValue.name().equals("UNKNOWN")) {
-                        return;
+                        continue;
                     }
 
                     // add built service state
@@ -74,7 +73,7 @@ public class GenericServiceSimulator extends AbstractRandomServiceSimulator<Gene
                 } catch (final Exception ex) {
                     MultiException.push(this, ex, exceptionStack);
                 }
-            });
+            }
             MultiException.checkAndThrow("Could not generate all service values!", exceptionStack);
         } catch (CouldNotPerformException ex) {
             throw new CouldNotPerformException("Could not generate service states!", ex);

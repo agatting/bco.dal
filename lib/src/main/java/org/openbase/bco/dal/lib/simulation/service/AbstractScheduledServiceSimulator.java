@@ -74,25 +74,28 @@ public abstract class AbstractScheduledServiceSimulator<SERVICE_STATE extends Ge
     public AbstractScheduledServiceSimulator(final UnitController unitController, final ServiceType serviceType, final long changeRate) {
         this.changeRate = changeRate;
         this.unitController = unitController;
-        this.simulationTask = () -> {
+        this.simulationTask = new Runnable() {
+            @Override
+            public void run() {
 
-            final SERVICE_STATE serviceState;
-            try {
-                serviceState = getNextServiceState();
-            } catch (NotAvailableException ex) {
-                LOGGER.warn("No more further service states are available. Simulation task will be terminated.");
-                if (simulationTaskFuture != null) {
-                    simulationTaskFuture.cancel(true);
+                final SERVICE_STATE serviceState;
+                try {
+                    serviceState = AbstractScheduledServiceSimulator.this.getNextServiceState();
+                } catch (NotAvailableException ex) {
+                    LOGGER.warn("No more further service states are available. Simulation task will be terminated.");
+                    if (simulationTaskFuture != null) {
+                        simulationTaskFuture.cancel(true);
+                    }
+                    return;
                 }
-                return;
-            }
 
-            // apply random service manipulation
-            try {
-                // randomly select one of the registered service states, update the service state timestamp and apply the state update on unit controller.
-                unitController.applyDataUpdate(serviceType, TimestampProcessor.updateTimestampWithCurrentTime(serviceState));
-            } catch (CouldNotPerformException ex) {
-                ExceptionPrinter.printHistory("Could not apply service modification!", ex, LOGGER);
+                // apply random service manipulation
+                try {
+                    // randomly select one of the registered service states, update the service state timestamp and apply the state update on unit controller.
+                    unitController.applyDataUpdate(serviceType, TimestampProcessor.updateTimestampWithCurrentTime(serviceState));
+                } catch (CouldNotPerformException ex) {
+                    ExceptionPrinter.printHistory("Could not apply service modification!", ex, LOGGER);
+                }
             }
         };
     }

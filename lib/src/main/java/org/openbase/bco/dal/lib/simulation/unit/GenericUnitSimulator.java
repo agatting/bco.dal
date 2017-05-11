@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Future;
+import java8.util.function.Consumer;
+import java8.util.stream.StreamSupport;
 import org.openbase.bco.dal.lib.layer.unit.UnitController;
 import org.openbase.bco.dal.lib.simulation.service.AbstractServiceSimulator;
 import org.openbase.bco.dal.lib.simulation.service.ServiceSimulatorFactory;
@@ -89,8 +91,11 @@ public class GenericUnitSimulator extends AbstractUnitSimulator {
     @Override
     protected Collection<Future> executeSimulationTasks() {
         final List<Future> futureList = new ArrayList<>();
-        serviceSimulatorList.forEach((simulator) -> {
-            futureList.addAll(simulator.executeSimulationTasks());
+        StreamSupport.stream(serviceSimulatorList).forEach(new Consumer<AbstractServiceSimulator>() {
+            @Override
+            public void accept(AbstractServiceSimulator simulator) {
+                futureList.addAll(simulator.executeSimulationTasks());
+            }
         });
         return futureList;
     }

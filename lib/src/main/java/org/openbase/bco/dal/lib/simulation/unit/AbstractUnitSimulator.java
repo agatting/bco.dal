@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Future;
+import java8.util.function.Consumer;
+import java8.util.stream.StreamSupport;
 import org.openbase.bco.dal.lib.layer.unit.UnitController;
 import org.openbase.jul.exception.CouldNotPerformException;
 import org.openbase.jul.iface.Activatable;
@@ -78,9 +80,12 @@ public abstract class AbstractUnitSimulator<UC extends UnitController> implement
         active = false;
 
         // stop all running tasks
-        runningTaskList.forEach((final Future taskFuture) -> {
-            if (!taskFuture.isDone()) {
-                taskFuture.cancel(true);
+        StreamSupport.stream(runningTaskList).forEach(new Consumer<Future>() {
+            @Override
+            public void accept(Future taskFuture) {
+                if (!taskFuture.isDone()) {
+                    taskFuture.cancel(true);
+                }
             }
         });
         runningTaskList.clear();

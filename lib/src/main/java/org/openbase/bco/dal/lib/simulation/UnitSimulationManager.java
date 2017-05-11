@@ -41,6 +41,8 @@ import org.openbase.jul.exception.printer.ExceptionPrinter;
 import org.openbase.jul.iface.Manageable;
 import org.openbase.jul.iface.Shutdownable;
 import org.openbase.jul.iface.Shutdownable$;
+import org.openbase.jul.pattern.Observable;
+import org.openbase.jul.pattern.Observer;
 import org.openbase.jul.schedule.SyncObject;
 import org.slf4j.LoggerFactory;
 
@@ -88,9 +90,9 @@ public class UnitSimulationManager implements Manageable<UnitControllerRegistry<
 
         try {
             Registries.getUnitRegistry().waitForData();
-            unitControllerRegistry.addObserver((source, data) -> {
-                updateUnitSimulators(data.values());
-            });
+//            unitControllerRegistry.addObserver((source, data) -> {
+//                updateUnitSimulators(data.values());
+//            });
             updateUnitSimulators(unitControllerRegistry.getValue().values());
         } catch (Exception ex) {
             ExceptionPrinter.printHistory(new InitializationException(this, ex), LOGGER);
