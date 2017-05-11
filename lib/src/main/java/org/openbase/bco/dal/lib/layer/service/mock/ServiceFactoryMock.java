@@ -28,7 +28,6 @@ import java.util.Random;
 import java8.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import org.openbase.bco.dal.lib.layer.service.Service;
 import org.openbase.bco.dal.lib.layer.service.Service$;
 import org.openbase.bco.dal.lib.layer.service.ServiceFactory;
 import org.openbase.bco.dal.lib.layer.service.operation.BlindStateOperationService;
@@ -43,6 +42,9 @@ import org.openbase.bco.dal.lib.transform.HSBColorToRGBColorTransformer;
 import org.openbase.jul.exception.*;
 import org.openbase.jul.exception.InstantiationException;
 import org.openbase.jul.exception.printer.ExceptionPrinter;
+import org.openbase.jul.exception.CouldNotPerformException;
+import org.openbase.jul.exception.InvalidStateException;
+import org.openbase.jul.exception.NotAvailableException;
 import org.openbase.jul.extension.rst.processing.TimestampProcessor;
 import org.openbase.jul.schedule.GlobalScheduledExecutorService;
 import org.slf4j.LoggerFactory;
@@ -96,32 +98,6 @@ public class ServiceFactoryMock implements ServiceFactory {
 
     @Override
     public <UNIT extends ColorStateOperationService & Unit> ColorStateOperationService newColorService(final UNIT unit) throws org.openbase.jul.exception.InstantiationException {
-//        ServiceSimulator serviceSimulator = new ServiceSimulator(ServiceType.COLOR_STATE_SERVICE, unit, 500);
-//        serviceSimulator.addState(ColorState.newBuilder().setColor(Color.newBuilder().setHsbColor(HSBColorType.HSBColor.newBuilder()
-//                .setBrightness(100)
-//                .setSaturation(100)
-//                .setHue(100).build()).build()).build());
-//        serviceSimulator.addState(ColorState.newBuilder().setColor(Color.newBuilder().setHsbColor(HSBColorType.HSBColor.newBuilder()
-//                .setBrightness(100)
-//                .setSaturation(100)
-//                .setHue(200).build()).build()).build());
-//        serviceSimulator.addState(ColorState.newBuilder().setColor(Color.newBuilder().setHsbColor(HSBColorType.HSBColor.newBuilder()
-//                .setBrightness(100)
-//                .setSaturation(100)
-//                .setHue(300).build()).build()).build());
-//        serviceSimulator.addState(ColorState.newBuilder().setColor(Color.newBuilder().setHsbColor(HSBColorType.HSBColor.newBuilder()
-//                .setBrightness(100)
-//                .setSaturation(100)
-//                .setHue(0).build()).build()).build());
-//        serviceSimulator.addState(ColorState.newBuilder().setColor(Color.newBuilder().setHsbColor(HSBColorType.HSBColor.newBuilder()
-//                .setBrightness(0)
-//                .setSaturation(100)
-//                .setHue(0).build()).build()).build());
-//        serviceSimulator.addState(ColorState.newBuilder().setColor(Color.newBuilder().setHsbColor(HSBColorType.HSBColor.newBuilder()
-//                .setBrightness(100)
-//                .setSaturation(0)
-//                .setHue(0).build()).build()).build());
-
         return new ColorStateOperationService() {
 
             @Override
@@ -179,10 +155,6 @@ public class ServiceFactoryMock implements ServiceFactory {
 
     @Override
     public <UNIT extends PowerStateOperationService & Unit> PowerStateOperationService newPowerService(final UNIT unit) throws org.openbase.jul.exception.InstantiationException {
-
-//        ServiceSimulator serviceSimulator = new ServiceSimulator(ServiceType.POWER_STATE_SERVICE, unit, 500);
-//        serviceSimulator.addState(PowerState.newBuilder().setValue(PowerState.State.OFF).build());
-//        serviceSimulator.addState(PowerState.newBuilder().setValue(PowerState.State.ON).build());
         return new PowerStateOperationService() {
 
             @Override

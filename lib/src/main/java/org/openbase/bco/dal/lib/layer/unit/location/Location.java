@@ -33,20 +33,18 @@ import org.openbase.jul.iface.Snapshotable;
 import org.openbase.jul.iface.annotations.RPCMethod;
 import rst.domotic.action.SnapshotType.Snapshot;
 import rst.domotic.service.ServiceConfigType.ServiceConfig;
-import rst.domotic.service.ServiceTemplateType;
 import rst.domotic.service.ServiceTemplateType.ServiceTemplate;
 import rst.domotic.state.PresenceStateType.PresenceState;
-import rst.domotic.unit.UnitTemplateType.UnitTemplate;
 import rst.domotic.unit.location.LocationDataType.LocationData;
 import org.openbase.bco.dal.lib.layer.unit.MultiUnitServiceFusion;
+import rst.domotic.service.ServiceTemplateType.ServiceTemplate.ServiceType;
+import rst.domotic.unit.UnitTemplateType.UnitTemplate.UnitType;
 
 /**
  *
  * @author <a href="mailto:divine@openbase.org">Divine Threepwood</a>
  */
-public interface Location extends BaseUnit<LocationData>,
-        PresenceStateProviderService, Snapshotable<Snapshot>,
-        MultiUnitServiceFusion {
+public interface Location extends BaseUnit<LocationData>, PresenceStateProviderService, Snapshotable<Snapshot>, MultiUnitServiceFusion {
 
     /**
      * TODO: Will return controller/remotes in the final implementation. Waiting for a
@@ -82,11 +80,11 @@ public interface Location extends BaseUnit<LocationData>,
 //    }
 
     @Override
-    public Set<ServiceTemplateType.ServiceTemplate.ServiceType> getSupportedServiceTypes() throws NotAvailableException, InterruptedException;
+    public Set<ServiceType> getSupportedServiceTypes() throws NotAvailableException, InterruptedException;
 
     @Override
     public PresenceState getPresenceState() throws NotAvailableException;
 
     @RPCMethod
-    public Future<Snapshot> recordSnapshot(final UnitTemplate.UnitType unitType) throws CouldNotPerformException, InterruptedException;
+    public Future<Snapshot> recordSnapshot(final UnitType unitType) throws CouldNotPerformException, InterruptedException;
 }

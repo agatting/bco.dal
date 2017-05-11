@@ -24,6 +24,8 @@ package org.openbase.bco.dal.lib.layer.service;
 import com.google.protobuf.GeneratedMessage;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.concurrent.Future;
 import org.openbase.jul.exception.CouldNotPerformException;
 import org.openbase.jul.exception.NotAvailableException;
@@ -49,4 +51,5 @@ public interface Service {
 
     @RPCMethod
     public Future<Void> applyAction(final ActionConfigType.ActionConfig actionConfig) throws CouldNotPerformException, InterruptedException;
+
 }
